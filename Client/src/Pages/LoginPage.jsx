@@ -15,8 +15,15 @@ const Login = () => {
   const roles = ["Student", "Faculty", "Admin"];
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [emailError, setEmailError] = useState(false);
   const handleChange = (event, newValue) => {
     setRole(newValue);
+  };
+  const handleEmailChange = (event) => {
+    setEmail(event.target.value);
+
+    const emailRegex = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i;
+    setEmailError(!emailRegex.test(event.target.value));
   };
   const [showPassword, setShowPassword] = useState(false);
   const handleClickShowPassword = () => {
@@ -66,7 +73,9 @@ const Login = () => {
             sx={{ m: 1 }}
             value={email}
             type="email"
-            onChange={(e) => setEmail(e.target.value)}
+            error={emailError}
+            helperText={emailError ? "Invalid email format" : ""}
+            onChange={handleEmailChange}
           />
           <FormControl sx={{ m: 1 }} variant="outlined">
             <InputLabel htmlFor="outlined-adornment-password">
