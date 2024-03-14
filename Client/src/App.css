@@ -1,42 +1,56 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
+@import url('https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Poppins:wght@100&family=Quicksand:wght@400;500;600;700&display=swap');
+
+img {
+  margin: 3px;
+}
+
+.home-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  height: 90vh;
+
+}
+
+.home-desc {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 0 20px;
+}
+
+.home-desc h1 {
   text-align: center;
+  font-size: 3rem;
+  font-weight: 400;
+  color: #202020;
+  margin-bottom: 20px;
+  font-family: "Abril Fatface", serif
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+.home-desc h1 span {
+  font-size: 2rem;
+  font-weight: 400;
+  margin-bottom: 20px;
+  font-family: "Abril Fatface", serif
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+
+.home-desc .img-container {
+  margin-top: 20px;
+  width: 100%;
+  max-width: 450px;
+  height: auto;
+  position: relative;
+  overflow: hidden;
+
+
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
-}
-
-.card {
-  padding: 2em;
-}
-
-.read-the-docs {
-  color: #888;
+.home-desc .img-container img {
+  width: 100%;
+  height: auto;
 }
