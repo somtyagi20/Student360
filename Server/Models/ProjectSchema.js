@@ -15,12 +15,10 @@ const projectSchema = new mongoose.Schema({
   },
   hosted_link: {
     type: String,
-    required: true,
   },
   documentation: [
     {
       type: String,
-      required: true,
     },
   ],
   student: {

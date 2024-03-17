@@ -15,32 +15,28 @@ const studentSchema = new mongoose.Schema({
   },
   contact_no: {
     type: String,
-    required: true,
   },
   password: {
     type: String,
     required: true,
   },
-  profile_pic: String,
+  profile_pic: {
+    type: String,
+  },
   department: {
     type: String,
-    required: true,
   },
   dob: {
     type: Date,
-    required: true,
   },
   class: {
     type: String,
-    required: true,
   },
   current_address: {
     type: String,
-    required: true,
   },
   permanent_address: {
     type: String,
-    required: true,
   },
   career_goals: {
     type: String,
@@ -50,10 +46,6 @@ const studentSchema = new mongoose.Schema({
       type: String,
     },
   ],
-  role: {
-    type: String,
-    required: true,
-  },
 });
 
 const Student = mongoose.model("Student", studentSchema);

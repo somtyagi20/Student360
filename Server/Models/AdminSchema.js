@@ -13,10 +13,8 @@ const adminSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  profile_pic: String,
-  role: {
+  profile_pic: {
     type: String,
-    required: true,
   },
 });
 
