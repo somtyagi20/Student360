@@ -15,16 +15,13 @@ const facultySchema = new mongoose.Schema({
   },
   contact_no: {
     type: String,
-    required: true,
   },
   password: {
     type: String,
     required: true,
   },
-  profile_pic: String,
-  role: {
+  profile_pic: {
     type: String,
-    required: true,
   },
 });
 
