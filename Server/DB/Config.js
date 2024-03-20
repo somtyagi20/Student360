@@ -1,14 +1,17 @@
+import "dotenv/config";
 import mongoose from "mongoose";
+import { DB_Name } from "../constants.js";
 
-const db = () => {
-  mongoose
-    .connect("mongodb://127.0.0.1:27017/SRAS")
-    .then(() => {
-      console.log("DB Connected");
-    })
-    .catch((err) => {
-      console.log("DB Connection Error: " + err);
-    });
+const db = async () => {
+  try {
+    const connectionInstance = await mongoose.connect(
+      `${process.env.MONGO_URI}/${DB_Name}`
+    );
+    console.log(`Database Connected: ${connectionInstance.connection.host}`);
+  } catch (error) {
+    console.log("Database Connection Error: ", error);
+    process.exit(1);
+  }
 };
 
 export default db;
