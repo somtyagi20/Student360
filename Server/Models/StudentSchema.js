@@ -31,6 +31,7 @@ const studentSchema = new mongoose.Schema({
   },
   class: {
     type: String,
+    required: true,
   },
   current_address: {
     type: String,
