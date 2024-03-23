@@ -1,11 +1,13 @@
 *{
     margin: 0;
+
+
 }
 .student-header{
     position: relative;
 }
 .st-background{
-    background-image: url('../assets/cloudyBackground.jpg');
+    background-image: url('../assets/back3.jpg');
     background-size: cover;
     background-position: center; 
     background-repeat: no-repeat;
@@ -14,18 +16,34 @@
 
 }
 .st-details{
-    background-color: rgb(228, 242, 242);
-    height: 100px;
+    background-color: #0766AD;
+    height: 150px;
     width: 100vw;
     display: flex;
     justify-content: center;
     align-items: center;
+    box-sizing:border-box;
+    padding:30px;
+    
+    
 }
 .user-image{
     position: absolute;
     left: 30px;
-    top: 17px;
-    width: 200px;
-    height: 200px;
+    top: 30px;
+    width: 250px;
+    height: 250px;
     border-radius: 50%;
+}
+span{
+    font-size: 2rem;
+    font-weight: bold;
+}
+b{
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.tabs{
+    width: calc(100vw / 4);
 }
