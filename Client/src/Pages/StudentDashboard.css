@@ -1,0 +1,31 @@
+*{
+    margin: 0;
+}
+.student-header{
+    position: relative;
+}
+.st-background{
+    background-image: url('../assets/cloudyBackground.jpg');
+    background-size: cover;
+    background-position: center; 
+    background-repeat: no-repeat;
+    height: 135px;
+    width: 100vw;
+
+}
+.st-details{
+    background-color: rgb(228, 242, 242);
+    height: 100px;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.user-image{
+    position: absolute;
+    left: 30px;
+    top: 17px;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+}
