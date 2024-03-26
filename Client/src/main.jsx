@@ -5,6 +5,7 @@ import "./index.css";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import StudentDashboard from "./Pages/StudentDashboard.jsx";
+import CompleteProfile from "./Pages/CompleteProfile.jsx";
 
 const theme = createTheme({
   palette: {
@@ -21,6 +22,7 @@ ReactDOM.createRoot(document.getElementById("root")).render(
         <Routes>
           <Route path="/" element={<App />} />
           <Route path="/student" element={<StudentDashboard />} />
+          <Route path="/profileComplete" element={<CompleteProfile />} />
         </Routes>
       </Router>
     </ThemeProvider>
