@@ -1,0 +1,49 @@
+*{
+    margin: 0;
+
+
+}
+.student-header{
+    position: relative;
+}
+.st-background{
+    background-image: url('../assets/back3.jpg');
+    background-size: cover;
+    background-position: center; 
+    background-repeat: no-repeat;
+    height: 135px;
+    width: 100vw;
+
+}
+.st-details{
+    background-color: #0766AD;
+    height: 150px;
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-sizing:border-box;
+    padding:30px;
+    
+    
+}
+.user-image{
+    position: absolute;
+    left: 30px;
+    top: 30px;
+    width: 250px;
+    height: 250px;
+    border-radius: 50%;
+}
+span{
+    font-size: 2rem;
+    font-weight: bold;
+}
+b{
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.tabs{
+    width: calc(100vw / 4);
+}
