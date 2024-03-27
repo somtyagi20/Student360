@@ -1,0 +1,46 @@
+.personal-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    height: 100%;
+    padding: 20px;
+    margin: 0 auto;
+}
+
+.personal-form label {
+    font-size: 1.5rem;
+    margin: 10px 0;
+}
+
+.personal-form input {
+    width: 100%;
+    height: 40px;
+    font-size: 1.5rem;
+    padding: 5px;
+    margin: 5px 0;
+}
+
+.personal-form select {
+    width: 100%;
+    height: 45px;
+    font-size: 1.5rem;
+    padding: 5px;
+    margin: 5px 0;
+}
+
+.personal-form button {
+    width: 100%;
+    height: 45px;
+    font-size: 1.5rem;
+    margin: 10px 0;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+}
+
+.personal-form button:hover {
+    background-color: #0056b3;
+}
