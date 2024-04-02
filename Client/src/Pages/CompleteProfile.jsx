@@ -1,41 +1,58 @@
-import { useState } from "react";
+import React, { useState } from "react";
+import { Stepper, Step, StepLabel, Button } from "@mui/material";
 import "./CompleteProfile.css";
+import PersonalForm from "../Components/PersonalForm";
+
+const steps = ["Form 1", "Form 2", "Form 3"]; // Add your form names here
 
 const CompleteProfile = () => {
+  const [activeStep, setActiveStep] = useState(0);
+
+  const handleNext = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  };
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
   return (
     <div className="form-container">
-      <div className="personal-form">
-        <h1>Complete Your Profile</h1>
-        <form>
-          <label htmlFor="Contact">Contact</label>
-          <input type="number" name="Contact" id="Contact" />
-
-          <label htmlFor="Department">Department</label>
-          <select name="Department" id="">
-            <option value="CSE">CSE</option>
-            <option value="ECE">ECE</option>
-            <option value="ME">ME</option>
-            <option value="CE">CE</option>
-            <option value="EE">EE</option>
-          </select>
-
-          <label htmlFor="DOB">DOB</label>
-          <input type="date" name="DOB" id="DOB" />
-
-          <label htmlFor="CurrentAddress">Current Address</label>
-          <input type="text" name="CurrentAddress" id="CurrentAddress" />
-
-          <label htmlFor="PermanentAddress">Permanent Address</label>
-          <input type="text" name="PermanentAddress" id="PermanentAddress" />
-
-          <label htmlFor="CareerGoals">Career Goals</label>
-          <input type="text" name="CareerGoals" id="CareerGoals" />
-
-          <label htmlFor="Skills">Skills</label>
-          <input type="text" name="Skills" id="Skills" />
-
-          <button type="submit">Next</button>
-        </form>
+      <h1>Complete Your Profile</h1>
+      <Stepper activeStep={activeStep} alternativeLabel>
+        {steps.map((label) => (
+          <Step key={label}>
+            <StepLabel>{label}</StepLabel>
+          </Step>
+        ))}
+      </Stepper>
+      <div>
+        {activeStep === steps.length ? (
+          <div>
+            <h2>All steps completed</h2>
+          </div>
+        ) : (
+          <div
+            style={{
+              padding: "20px",
+              paddingTop: "40px",
+            }}
+          >
+            {activeStep == 0 ? (
+              <PersonalForm />
+            ) : (
+              <h2>Form {activeStep + 1}</h2>
+            )}
+            <div className="button-container">
+              <Button disabled={activeStep === 0} onClick={handleBack}>
+                Back
+              </Button>
+              <Button variant="contained" color="primary" onClick={handleNext}>
+                {activeStep === steps.length - 1 ? "Finish" : "Next"}
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

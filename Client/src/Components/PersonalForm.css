@@ -1,0 +1,51 @@
+.personal-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 50%;
+    height: 100%;
+    padding: 40px;
+    margin: 0 auto;
+    box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    background-color: white;
+    color: black;
+}
+
+.personal-form h1 {
+    font-size: 2.5rem;
+    margin: 10px 0;
+}
+
+
+
+.personal-form label {
+    font-size: 1.5rem;
+    margin: 10px 0;
+}
+
+.personal-form input {
+    width: 100%;
+    height: 40px;
+    font-size: 1.5rem;
+    padding: 5px;
+    margin: 5px 0;
+}
+
+.personal-form select {
+    width: 100%;
+    height: 45px;
+    font-size: 1.5rem;
+    padding: 5px;
+    margin: 5px 0;
+}
+
+.personal-form .submit-button {
+    width: 100%;
+    height: 45px;
+    font-size: 1.5rem;
+    margin: 10px 0;
+    border: none;
+    cursor: pointer;
+}
