@@ -1,28 +1,23 @@
+import { Box } from '@mui/material';
+import Navbar from '../Components/Navbar';
+import FacultyInfoCard from '../Components/FacultyInfoCard';
+import StudentDetail from '../Components/StudentDetail';
+import StudentTable from '../Components/StudentTable';
 import "./FacultyDashboard.css";
-import image from "../assets/nar.jpg";
 
-
-const user = {
-        name: "Narendra Pal Singh Rathore",
-        class: "Cs Department",
-        img: image,
-    }
-    const FacultyDashboard = () => {
-    return (
-        <div className="Faculty-header">
-        <img src={user.img} alt="" className="user-image"/>
-        <div className="ft-background"></div>
-        <div className="ft-details">
-        <div className="details">
-        <b>Name: </b>
-        <span>{user.name}</span>
-        <br />
-        <b>Class: </b>
-        <span>{user.class}</span>
-
-        </div>
-        </div>
-        </div>
-    );
-   }
+const FacultyDashboard = () => {
+    return ( <Box sx={{ display: 'flex', flexDirection: 'column', marginTop: '65px',gap:5 }}> {/* Container */}
+    <Navbar/>
+    <FacultyInfoCard /> 
+    <div
+    style={{
+        padding: '20px',
+    }}
+    > 
+    <StudentDetail />
+    <StudentTable/>
+    </div>
+  </Box> );
+}
+ 
 export default FacultyDashboard;

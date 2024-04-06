@@ -1,49 +1,97 @@
-*{
-    margin: 0;
-
-
+.student-header {
+    margin-top: 20px;
+    position: relative;
+    padding: 20px;
+    background-color: #f5f5f5;
+    /* light gray */
+    border-bottom: 1px solid #e0e0e0;
+    /* darker gray */
 }
-.student-header{
+
+.st-background {
+    background-size: cover;
+    backdrop-filter: blur(10px);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-image: url("../assets/background.jpg");
+    height: 300px;
+    width: 100vw;
+
     position: relative;
 }
-.st-background{
-    background-image: url('../assets/back3.jpg');
-    background-size: cover;
-    background-position: center; 
-    background-repeat: no-repeat;
-    height: 135px;
-    width: 100vw;
 
-}
-.st-details{
-    background-color: #0766AD;
-    height: 150px;
+.st-details {
+    background-color: rgba(255, 255, 255, 0.336);
+    backdrop-filter: blur(10px);
+    height: 140px;
     width: 100vw;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-sizing:border-box;
-    padding:30px;
-    
-    
-}
-.user-image{
+    box-sizing: border-box;
+    padding: 10px;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
     position: absolute;
-    left: 30px;
-    top: 30px;
-    width: 250px;
-    height: 250px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.user-image {
+    width: 200px;
+    height: 200px;
     border-radius: 50%;
+    object-fit: cover;
+    margin-top: 20px;
+    margin-left: 20px;
+    border: 5px solid white;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    position: absolute;
+    top: 56px;
+    left: 100px;
+    z-index: 2;
 }
-span{
-    font-size: 2rem;
-    font-weight: bold;
+
+.details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+
+
+    margin-left: 350px;
+
 }
-b{
-    font-size: 2rem;
+
+.details * {
+    font-family: 'Roboto', sans-serif;
+    color: #212121;
+    letter-spacing: 2px;
+
+
+
+}
+
+.details .detail-item span {
+    font-size: 1.5rem;
     font-weight: bold;
 }
 
-.tabs{
+.details .detail-item b {
+    font-size: 1.6rem;
+    font-weight: bold;
+}
+
+
+span {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+b {
+    font-size: 1.6rem;
+    font-weight: bold;
+}
+
+.tabs {
     width: calc(100vw / 4);
 }
