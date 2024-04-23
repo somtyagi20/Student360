@@ -4,7 +4,7 @@ In the realm of education, efficient management of student information is crucia
 
 Student360 is meticulously crafted to meet the diverse needs of educational administration. It offers a suite of features tailored to optimize user experience and system performance. With a focus on simplicity, effectiveness, and adaptability, Student360 aims to redefine how student information is managed within educational institutions.
 
-## Features
+# Features
 
 - **Secure Login Authentication**: Ensures that only authorized users can access the system.
 - **Intuitive Student Profile Management**: Allows for easy access and management of student profiles.
