@@ -24,6 +24,10 @@ import {
   refreshAccessToken,
   validateOTP,
   setNewPassword,
+  getAcademicInfo,
+  getInternship,
+  getExtraCurricular,
+  getProject,
 } from "../Controllers/studentController.js";
 
 //route implementation
@@ -65,5 +69,9 @@ router
 router.route("/getUserDetails").get(verifyJWT, getUserDetails);
 router.route("/getMSTMarks").get(verifyJWT, getMSTMarks);
 router.route("/refreshAcessToken").post(refreshAccessToken);
+router.route("/getAcademicInfo").get(verifyJWT, getAcademicInfo);
+router.route("/getInternship").get(verifyJWT, getInternship);
+router.route("/getExtraCurricular").get(verifyJWT, getExtraCurricular);
+router.route("/getProject").get(verifyJWT, getProject);
 
 export default router;
