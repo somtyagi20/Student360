@@ -1,7 +1,6 @@
 import { asyncHandler } from "../Utils/asyncHandler.js";
 import { ApiError } from "../Utils/apiError.js";
 import { ApiResponse } from "../Utils/apiResponse.js";
-import { Admin } from "../Models/AdminSchema.js";
 import { v4 as uuidv4 } from "uuid";
 import nodemailer from "nodemailer";
 import { Student } from "../Models/StudentSchema.js";
@@ -9,7 +8,7 @@ import { Faculty } from "../Models/FacultySchema.js";
 
 const generateAccessAndRefreshToken = async (_id) => {
   try {
-    const user = await Admin.findById(_id).select("-password");
+    const user = await Faculty.findById(_id).select("-password");
 
     const accessToken = await user.generateAccessToken();
     const refreshToken = await user.generateRefreshToken();
@@ -23,7 +22,7 @@ const generateAccessAndRefreshToken = async (_id) => {
   }
 };
 
-const loginAdmin = asyncHandler(async (req, res) => {
+const loginFaculty = asyncHandler(async (req, res) => {
   //get email and password from frontend
   //validate email and password
   //search user by email in db
@@ -32,11 +31,11 @@ const loginAdmin = asyncHandler(async (req, res) => {
   //send response
 
   const { email, password } = req.body;
-  if (email.trim === "" || password.trim === "") {
+  if (email.trim() === "" || password.trim() === "") {
     throw new ApiError(400, "Username and password is required");
   }
 
-  const user = await Admin.findOne({
+  const user = await Faculty.findOne({
     email,
   });
 
@@ -54,7 +53,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
     user._id
   );
 
-  const loggedInUser = await Admin.findOne({
+  const loggedInUser = await Faculty.findOne({
     email,
   }).select("-password -refreshToken");
 
@@ -85,7 +84,7 @@ const forgotPassword = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Email is required");
   }
 
-  const user = await Admin.findOne({ email });
+  const user = await Faculty.findOne({ email });
   if (!user) {
     throw new ApiError(400, "User does not exist");
   }
@@ -133,7 +132,7 @@ const validateOTP = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Email and OTP is required");
   }
 
-  const user = await Admin.findOne({
+  const user = await Faculty.findOne({
     email,
   });
 
@@ -169,7 +168,7 @@ const setNewPassword = asyncHandler(async (req, res) => {
     throw new ApiError(400, "password is required");
   }
 
-  const user = await Admin.findById(req.user._id);
+  const user = await Faculty.findById(req.user._id);
 
   if (!user) {
     throw new ApiError(400, "User does not exist");
@@ -186,7 +185,7 @@ const setNewPassword = asyncHandler(async (req, res) => {
 });
 
 const getClasses = asyncHandler(async (req, res) => {
-  const user = await Admin.findById(req.user._id);
+  const user = await Faculty.findById(req.user._id);
   let classes;
   if (user) {
     classes = await Student.distinct("class");
@@ -199,7 +198,7 @@ const getClasses = asyncHandler(async (req, res) => {
 });
 
 const studentsByClass = asyncHandler(async (req, res) => {
-  const user = await Admin.findById(req.user._id);
+  const user = await Faculty.findById(req.user._id);
   let students;
   if (user) {
     students = await Student.find({ class: req.query.class });
@@ -212,7 +211,7 @@ const studentsByClass = asyncHandler(async (req, res) => {
 });
 
 const getStudent = asyncHandler(async (req, res) => {
-  const user = await Admin.findById(req.user._id);
+  const user = await Faculty.findById(req.user._id);
   let student;
   if (user) {
     student = await Student.findById(req.query.id);
@@ -224,41 +223,12 @@ const getStudent = asyncHandler(async (req, res) => {
   }
 });
 
-const getFaculty = asyncHandler(async (req, res) => {
-  const user = await Admin.findById(req.user._id);
-  let faculty;
-  if (user) {
-    faculty = await Faculty.findById(req.query.id);
-    return res
-      .status(200)
-      .json(new ApiResponse(200, faculty, "Faculty fetched successfully"));
-  } else {
-    throw new ApiError(400, "Not authorized to access this route");
-  }
-});
-
-const giveAccess = asyncHandler(async (req, res) => {
-  const user = await Admin.findById(req.user._id);
-  if (user) {
-    const faculty = await Faculty.findById(req.query.id);
-    faculty.accessed_class.push(req.body.class);
-    await faculty.save({ validateBeforeSave: false });
-    return res
-      .status(200)
-      .json(new ApiResponse(200, null, "Access given successfully"));
-  } else {
-    throw new ApiError(400, "Not authorized to access this route");
-  }
-});
-
 export {
-  loginAdmin,
+  loginFaculty,
   forgotPassword,
   validateOTP,
   setNewPassword,
   getClasses,
   studentsByClass,
   getStudent,
-  getFaculty,
-  giveAccess,
 };
