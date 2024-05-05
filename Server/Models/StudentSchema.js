@@ -45,13 +45,17 @@ const studentSchema = new mongoose.Schema(
     career_goals: {
       type: String,
     },
-    skills: [
-      {
-        type: String,
-      },
-    ],
+    skills: {
+      type: String,
+    },
     refreshToken: {
       type: String,
+    },
+    resetPasswordToken: {
+      type: String,
+    },
+    resetPasswordTokenExpires: {
+      type: Date,
     },
   },
   {

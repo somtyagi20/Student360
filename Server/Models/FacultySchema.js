@@ -23,6 +23,9 @@ const facultySchema = new mongoose.Schema({
   profile_pic: {
     type: String,
   },
+  accessed_class: {
+    type: Array,
+  },
 });
 
 export const Faculty = mongoose.model("Faculty", facultySchema);
