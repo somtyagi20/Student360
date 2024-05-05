@@ -168,14 +168,12 @@ const setNewPassword = asyncHandler(async (req, res) => {
   //update password
   //send response
 
-  const { email, newPassword } = req.body;
-  if (email.trim === "" || newPassword.trim === "") {
+  const { newPassword } = req.body;
+  if (newPassword.trim() === "") {
     throw new ApiError(400, "Email and password is required");
   }
 
-  const user = await Student.findOne({
-    email,
-  });
+  const user = await Student.findById(req.user._id);
 
   if (!user) {
     throw new ApiError(400, "User does not exist");
@@ -217,14 +215,14 @@ const updatePersonalDetails = asyncHandler(async (req, res) => {
       contact_no,
       department,
       dob,
-      studentClass,
+      class: studentClass,
       current_address,
       permanent_address,
       career_goals,
       skills,
     },
     { new: true }
-  );
+  ).select("-password -refreshToken");
 
   return res
     .status(200)
@@ -636,6 +634,63 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
     );
 });
 
+const getAcademicInfo = asyncHandler(async (req, res) => {
+  const user = await Student.findById(req.user._id).select(
+    "-password -refreshToken"
+  );
+
+  if (!user) throw new ApiError(400, "User not found");
+
+  const highSchool = await HighSchool.findOne({ student: req.user._id });
+  if (!highSchool) throw new ApiError(400, "High School details not found");
+
+  const intermediate = await Intermediate.findOne({ student: req.user._id });
+  if (!intermediate) throw new ApiError(400, "Intermediate details not found");
+
+  const graduation = await Graduation.findOne({ student: req.user._id });
+  if (!graduation) throw new ApiError(400, "Graduation details not found");
+
+  return res.status(200).json(
+    new ApiResponse(200, {
+      user,
+      highSchool,
+      intermediate,
+      graduation,
+    })
+  );
+});
+
+const getInternship = asyncHandler(async (req, res) => {
+  const internship = await Internship.find({ student: req.user._id });
+  if (!internship) {
+    throw new ApiError(400, "Internship details not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, internship, "Internship details"));
+});
+
+const getExtraCurricular = asyncHandler(async (req, res) => {
+  const extraCurricular = await ExtraCurricular.find({ student: req.user._id });
+  if (!extraCurricular) {
+    throw new ApiError(400, "Extra curricular details not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, extraCurricular, "Extra curricular details"));
+});
+
+const getProject = asyncHandler(async (req, res) => {
+  const project = await Project.find({ student: req.user._id });
+  if (!project) {
+    throw new ApiError(400, "Project details not found");
+  }
+
+  return res.status(200).json(new ApiResponse(200, project, "Project details"));
+});
+
 export {
   loginStudent,
   forgotPassword,
@@ -655,4 +710,8 @@ export {
   getUserDetails,
   getMSTMarks,
   refreshAccessToken,
+  getAcademicInfo,
+  getInternship,
+  getExtraCurricular,
+  getProject,
 };
