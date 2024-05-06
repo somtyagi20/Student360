@@ -650,12 +650,15 @@ const getAcademicInfo = asyncHandler(async (req, res) => {
   const graduation = await Graduation.findOne({ student: req.user._id });
   if (!graduation) throw new ApiError(400, "Graduation details not found");
 
+  const sgpa = await Sgpa.find({ student: req.user._id });
+
   return res.status(200).json(
     new ApiResponse(200, {
       user,
       highSchool,
       intermediate,
       graduation,
+      sgpa,
     })
   );
 });
