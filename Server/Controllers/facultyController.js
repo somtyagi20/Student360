@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import nodemailer from "nodemailer";
 import { Student } from "../Models/StudentSchema.js";
 import { Faculty } from "../Models/FacultySchema.js";
+import { UploadOnCloudinary } from "../Utils/cloudinary.js";
 
 const generateAccessAndRefreshToken = async (_id) => {
   try {
@@ -222,6 +223,54 @@ const getStudent = asyncHandler(async (req, res) => {
   }
 });
 
+const updatePersonalDetails = asyncHandler(async (req, res) => {
+  console.log(req.user._id);
+
+  const { name, email, department, contact_no } = req.body;
+  if (
+    name.trim() === "" ||
+    email.trim() === "" ||
+    department.trim() === "" ||
+    contact_no.trim() === ""
+  ) {
+    throw new ApiError(400, "All fields are required");
+  }
+  const user = await Faculty.findByIdAndUpdate(
+    req.user._id,
+    {
+      name,
+      email,
+      department,
+      contact_no,
+    },
+    { new: true }
+  ).select("-password -refreshToken");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "User details updated successfully"));
+});
+
+const updateProfilePicture = asyncHandler(async (req, res) => {
+  const fileUrl = req.file?.path;
+  if (!fileUrl) {
+    throw new ApiError(401, "Profile picture is required");
+  }
+
+  const response = await UploadOnCloudinary(fileUrl);
+  if (!response) {
+    throw new ApiError(500, "Profile picture upload failed");
+  }
+
+  const user = await Faculty.findByIdAndUpdate(req.user._id, {
+    profile_pic: response.url,
+  }).select("-password -refreshToken");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "Profile picture updated successfully"));
+});
+
 export {
   loginFaculty,
   forgotPassword,
@@ -230,4 +279,6 @@ export {
   getClasses,
   studentsByClass,
   getStudent,
+  updatePersonalDetails,
+  updateProfilePicture,
 };
