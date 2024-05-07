@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from "uuid";
 import nodemailer from "nodemailer";
 import { Student } from "../Models/StudentSchema.js";
 import { Faculty } from "../Models/FacultySchema.js";
+import { UploadOnCloudinary } from "../Utils/cloudinary.js";
 
 const generateAccessAndRefreshToken = async (_id) => {
   try {
@@ -32,7 +33,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
   //send response
 
   const { email, password } = req.body;
-  if (email.trim === "" || password.trim === "") {
+  if (email.trim() === "" || password.trim() === "") {
     throw new ApiError(400, "Username and password is required");
   }
 
@@ -228,7 +229,7 @@ const getFaculty = asyncHandler(async (req, res) => {
   const user = await Admin.findById(req.user._id);
   let faculty;
   if (user) {
-    faculty = await Faculty.findById(req.query.id);
+    faculty = await Faculty.find();
     return res
       .status(200)
       .json(new ApiResponse(200, faculty, "Faculty fetched successfully"));
@@ -251,6 +252,47 @@ const giveAccess = asyncHandler(async (req, res) => {
   }
 });
 
+const updatePersonalDetails = asyncHandler(async (req, res) => {
+  //get user id from req.user
+  //get updated details from frontend
+  //update user details
+  //send response
+
+  const { name, email } = req.body;
+  const user = await Admin.findByIdAndUpdate(
+    req.user._id,
+    {
+      name,
+      email,
+    },
+    { new: true }
+  ).select("-password -refreshToken");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "User details updated successfully"));
+});
+
+const updateProfilePicture = asyncHandler(async (req, res) => {
+  const fileUrl = req.file?.path;
+  if (!fileUrl) {
+    throw new ApiError(401, "Profile picture is required");
+  }
+
+  const response = await UploadOnCloudinary(fileUrl);
+  if (!response) {
+    throw new ApiError(500, "Profile picture upload failed");
+  }
+
+  const user = await Admin.findByIdAndUpdate(req.user._id, {
+    profile_pic: response.url,
+  }).select("-password -refreshToken");
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, user, "Profile picture updated successfully"));
+});
+
 export {
   loginAdmin,
   forgotPassword,
@@ -261,4 +303,6 @@ export {
   getStudent,
   getFaculty,
   giveAccess,
+  updatePersonalDetails,
+  updateProfilePicture,
 };
