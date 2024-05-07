@@ -1,51 +1,71 @@
 .personal-form {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1000;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    width: 50%;
-    height: 100%;
+    width: 100vh;
+    height: 50vh;
     padding: 40px;
     margin: 0 auto;
     box-shadow: 2px 2px 5px 1px rgba(0, 0, 0, 0.2);
     border-radius: 5px;
-    background-color: white;
+    background: linear-gradient(90deg, rgba(2, 0, 36, 1) 0%, rgb(231, 211, 255) 0%, rgb(203, 147, 255) 100%);
+
     color: black;
 }
 
+.personal-form form {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    gap: 30px;
+
+}
+
 .personal-form h1 {
-    font-size: 2.5rem;
+    font-size: 1.5rem;
     margin: 10px 0;
 }
 
 
 
 .personal-form label {
-    font-size: 1.5rem;
+    font-size: 1rem;
     margin: 10px 0;
 }
 
 .personal-form input {
     width: 100%;
-    height: 40px;
-    font-size: 1.5rem;
+    height: 30px;
+    font-size: 1rem;
     padding: 5px;
     margin: 5px 0;
 }
+
+
 
 .personal-form select {
-    width: 100%;
-    height: 45px;
-    font-size: 1.5rem;
+    width: 104%;
+    height: 40px;
+    font-size: 1rem;
     padding: 5px;
     margin: 5px 0;
 }
 
-.personal-form .submit-button {
-    width: 100%;
-    height: 45px;
-    font-size: 1.5rem;
-    margin: 10px 0;
+.submit-button {
+    background-color: #634dd1;
+    color: white;
+    padding: 10px 20px;
     border: none;
+    border-radius: 5px;
     cursor: pointer;
+    font-size: 1rem;
+    margin: 10px 0;
 }
