@@ -3,16 +3,20 @@ import image from "../assets/Avatar 5.png";
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Navbar from "../Components/Navbar";
-import { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { UserContext } from "../context/UserContext";
 import { useContext } from "react";
 import PersonalForm from "../Components/PersonalForm";
 import AddIcon from "@mui/icons-material/Add";
 import { IconButton } from "@mui/material";
 import AcademicDetails from "../Components/AcademicDetails";
+import Achievements from "../Components/Achievements";
+import axios from "axios";
+import { formatDate } from "../Config/logics";
 const StudentDashboard = () => {
   const [value, setValue] = useState(0);
-  const { user } = useContext(UserContext);
+  const [student, setStudent] = useState({});
+  const { user, setUser } = useContext(UserContext);
   const a11yProps = (index) => {
     return {
       id: `simple-tab-${index}`,
@@ -41,9 +45,64 @@ const StudentDashboard = () => {
   }
   const [isFormVisible, setFormVisible] = useState(false);
 
+  const fileInput = useRef();
+
+  const handleAddIconClick = () => {
+    fileInput.current.click();
+  };
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    console.log(file); // Log the selected file
+
+    try {
+      const formData = new FormData();
+      formData.append("profile_pic", file);
+      axios
+        .post(
+          "http://localhost:3000/api/v1/student/updateProfilePicture",
+          formData,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data.message);
+          getUserDetails();
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const getUserDetails = () => {
+    try {
+      axios
+        .get("http://localhost:3000/api/v1/student/getUserDetails", {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        })
+        .then((response) => {
+          const data = response.data.data;
+          setStudent(data);
+          setUser(data);
+          console.log(data);
+        });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   const handleUpdateClick = () => {
     setFormVisible(true);
   };
+
+  useEffect(() => {
+    getUserDetails();
+  }, [isFormVisible]);
 
   return (
     <div className="student-container">
@@ -58,11 +117,19 @@ const StudentDashboard = () => {
                 display: "flex",
               }}
             >
-              <img
-                src={user.profile_pic ? user.profile_pic : ""}
-                alt="student"
-                className="user-image"
-              />
+              {student && student.profile_pic ? (
+                <img
+                  src={student.profile_pic}
+                  alt="student"
+                  className="user-image"
+                />
+              ) : (
+                <img
+                  src="../src/assets/students2.jpg"
+                  alt="student"
+                  className="user-image"
+                />
+              )}
               <IconButton
                 sx={{
                   color: "#634dd1",
@@ -77,26 +144,37 @@ const StudentDashboard = () => {
                   top: "150px",
                   left: "170px",
                 }}
+                onClick={handleAddIconClick}
               >
                 <AddIcon />
               </IconButton>
+              <input
+                type="file"
+                ref={fileInput}
+                onChange={handleFileChange}
+                style={{ display: "none" }}
+              />
             </div>
             <div className="details">
               <div className="detail-item">
                 <b className="detail-label">Name: </b>
-                <span className="detail-value">{user ? user.name : ""}</span>
+                <span className="detail-value">
+                  {student ? student.name : ""}
+                </span>
               </div>
 
               <div className="detail-item">
                 <b className="detail-label">Enrollment no: </b>
                 <span className="detail-value">
-                  {user ? user.enrollment_no : ""}
+                  {student ? student.enrollment_no : ""}
                 </span>
               </div>
 
               <div className="detail-item">
                 <b className="detail-label">Class: </b>
-                <span className="detail-value">{user ? user.class : ""}</span>
+                <span className="detail-value">
+                  {student ? student.class : ""}
+                </span>
               </div>
             </div>
           </div>
@@ -118,31 +196,31 @@ const StudentDashboard = () => {
               <tbody>
                 <tr className="personal-item">
                   <th>Contact:</th>
-                  <td>{user ? user.contact_no : ""}</td>
+                  <td>{student ? student.contact_no : ""}</td>
                 </tr>
                 <tr className="personal-item">
                   <th>Department:</th>
-                  <td>{user ? user.department : ""}</td>
+                  <td>{student ? student.department : ""}</td>
                 </tr>
                 <tr className="personal-item">
                   <th>DOB:</th>
-                  <td>{user ? user.dob : ""}</td>
+                  <td>{student ? formatDate(student.dob) : ""}</td>
                 </tr>
                 <tr className="personal-item">
                   <th>Current Address:</th>
-                  <td>{user ? user.current_address : ""}</td>
+                  <td>{student ? student.current_address : ""}</td>
                 </tr>
                 <tr className="personal-item">
                   <th>Permanent Address:</th>
-                  <td>{user ? user.permanent_address : ""}</td>
+                  <td>{student ? student.permanent_address : ""}</td>
                 </tr>
                 <tr className="personal-item">
                   <th>Career Goals:</th>
-                  <td>{user ? user.career_goals : ""}</td>
+                  <td>{student ? student.career_goals : ""}</td>
                 </tr>
                 <tr className="personal-item">
                   <th>Skills:</th>
-                  <td>{user ? user.skills : ""}</td>
+                  <td>{student ? student.skills : ""}</td>
                 </tr>
               </tbody>
             </table>
@@ -178,9 +256,7 @@ const StudentDashboard = () => {
           <AcademicDetails />
         </TabPanel>
         <TabPanel value={value} index={2}>
-          <img src="../src/assets/doc-img.png" alt="Document" />
-          <img src="../src/assets/doc-img.png" alt="Document" />
-          <img src="../src/assets/doc-img.png" alt="Document" />
+          <Achievements />
         </TabPanel>
         <TabPanel value={value} index={3}>
           <img src="../src/assets/doc-img.png" alt="Document" />
