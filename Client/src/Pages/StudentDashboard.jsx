@@ -4,15 +4,15 @@ import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
 import Navbar from "../Components/Navbar";
 import { useState } from "react";
-
-const user = {
-  name: "Active Panda",
-  enrollment: "0827CS231233",
-  class: "CS-4",
-  img: image,
-};
+import { UserContext } from "../context/UserContext";
+import { useContext } from "react";
+import PersonalForm from "../Components/PersonalForm";
+import AddIcon from "@mui/icons-material/Add";
+import { IconButton } from "@mui/material";
+import AcademicDetails from "../Components/AcademicDetails";
 const StudentDashboard = () => {
   const [value, setValue] = useState(0);
+  const { user } = useContext(UserContext);
   const a11yProps = (index) => {
     return {
       id: `simple-tab-${index}`,
@@ -39,28 +39,64 @@ const StudentDashboard = () => {
       </div>
     );
   }
+  const [isFormVisible, setFormVisible] = useState(false);
+
+  const handleUpdateClick = () => {
+    setFormVisible(true);
+  };
 
   return (
     <div className="student-container">
       <Navbar />
       <div className="Student-header">
-        <img src={user.img} alt="" className="user-image" />
         <div className="st-background">
           <div className="st-details">
+            <div
+              className="user-image-container"
+              style={{
+                position: "relative",
+                display: "flex",
+              }}
+            >
+              <img
+                src={user.profile_pic ? user.profile_pic : ""}
+                alt="student"
+                className="user-image"
+              />
+              <IconButton
+                sx={{
+                  color: "#634dd1",
+                  backgroundColor: "white",
+                  borderRadius: "50%",
+                  padding: "5px",
+                  cursor: "pointer",
+                  zIndex: "1001",
+                  width: "40px",
+                  height: "40px",
+                  position: "absolute",
+                  top: "150px",
+                  left: "170px",
+                }}
+              >
+                <AddIcon />
+              </IconButton>
+            </div>
             <div className="details">
               <div className="detail-item">
                 <b className="detail-label">Name: </b>
-                <span className="detail-value">{user.name}</span>
+                <span className="detail-value">{user ? user.name : ""}</span>
               </div>
 
               <div className="detail-item">
-                <b className="detail-label">Enrollment: </b>
-                <span className="detail-value">{user.enrollment}</span>
+                <b className="detail-label">Enrollment no: </b>
+                <span className="detail-value">
+                  {user ? user.enrollment_no : ""}
+                </span>
               </div>
 
               <div className="detail-item">
                 <b className="detail-label">Class: </b>
-                <span className="detail-value">{user.class}</span>
+                <span className="detail-value">{user ? user.class : ""}</span>
               </div>
             </div>
           </div>
@@ -72,21 +108,74 @@ const StudentDashboard = () => {
           variant="fullWidth"
         >
           <Tab label="Personal Details" {...a11yProps(0)} className="tabs" />
-          <Tab label="Acadmic Document" {...a11yProps(1)} className="tabs" />
+          <Tab label="Academic Details" {...a11yProps(1)} className="tabs" />
           <Tab label="Achievements" {...a11yProps(2)} className="tabs" />
           <Tab label="Projects" {...a11yProps(3)} className="tabs" />
         </Tabs>
         <TabPanel value={value} index={0}>
-          <>
-            <img src="../src/assets/doc-img.png" alt="Document" />
-            <img src="../src/assets/doc-img.png" alt="Document" />
-            <img src="../src/assets/doc-img.png" alt="Document" />
-          </>
+          <div className="personal-details">
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <tbody>
+                <tr className="personal-item">
+                  <th>Contact:</th>
+                  <td>{user ? user.contact_no : ""}</td>
+                </tr>
+                <tr className="personal-item">
+                  <th>Department:</th>
+                  <td>{user ? user.department : ""}</td>
+                </tr>
+                <tr className="personal-item">
+                  <th>DOB:</th>
+                  <td>{user ? user.dob : ""}</td>
+                </tr>
+                <tr className="personal-item">
+                  <th>Current Address:</th>
+                  <td>{user ? user.current_address : ""}</td>
+                </tr>
+                <tr className="personal-item">
+                  <th>Permanent Address:</th>
+                  <td>{user ? user.permanent_address : ""}</td>
+                </tr>
+                <tr className="personal-item">
+                  <th>Career Goals:</th>
+                  <td>{user ? user.career_goals : ""}</td>
+                </tr>
+                <tr className="personal-item">
+                  <th>Skills:</th>
+                  <td>{user ? user.skills : ""}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div
+            style={{
+              position: "fixed",
+              bottom: "20px",
+              right: "20px",
+              zIndex: "100",
+            }}
+          >
+            {!isFormVisible && (
+              <button
+                style={{
+                  backgroundColor: "#634dd1",
+                  color: "white",
+                  padding: "10px 20px",
+                  border: "none",
+                  borderRadius: "5px",
+                  cursor: "pointer",
+                  fontSize: "1rem",
+                }}
+                onClick={handleUpdateClick}
+              >
+                Update
+              </button>
+            )}
+          </div>
+          {isFormVisible && <PersonalForm setFormVisible={setFormVisible} />}
         </TabPanel>
         <TabPanel value={value} index={1}>
-          <img src="../src/assets/doc-img.png" alt="Document" />
-          <img src="../src/assets/doc-img.png" alt="Document" />
-          <img src="../src/assets/doc-img.png" alt="Document" />
+          <AcademicDetails />
         </TabPanel>
         <TabPanel value={value} index={2}>
           <img src="../src/assets/doc-img.png" alt="Document" />
