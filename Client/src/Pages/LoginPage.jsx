@@ -52,6 +52,46 @@ const Login = () => {
         .catch((error) => {
           // handle login error
         });
+    } else if (r === "Faculty") {
+      try {
+        axios
+          .post("http://localhost:3000/api/v1/faculty/login", {
+            email,
+            password,
+          })
+          .then((response) => {
+            const data = response.data.data;
+            console.log(data);
+            localStorage.setItem("token", data.accessToken);
+            setUser(data.loggedInUser);
+            navigate("/faculty");
+          })
+          .catch((error) => {
+            // handle login error
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    } else if (r === "Admin") {
+      try {
+        axios
+          .post("http://localhost:3000/api/v1/admin/login", {
+            email,
+            password,
+          })
+          .then((response) => {
+            const data = response.data.data;
+            console.log(data);
+            localStorage.setItem("token", data.accessToken);
+            setUser(data.loggedInUser);
+            navigate("/admin");
+          })
+          .catch((error) => {
+            // handle login error
+          });
+      } catch (error) {
+        console.log(error);
+      }
     }
   };
 
