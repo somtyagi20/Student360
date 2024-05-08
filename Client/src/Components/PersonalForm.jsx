@@ -5,7 +5,7 @@ import { UserContext } from "../context/UserContext";
 import axios from "axios";
 
 const PersonalForm = ({ setFormVisible }) => {
-  const { user } = useContext(UserContext);
+  const { user, setUser } = useContext(UserContext);
   const [contact, setContact] = useState(user.contact_no);
   const [department, setDepartment] = useState(user.department);
   const [classs, setClass] = useState(user.class);
@@ -19,24 +19,35 @@ const PersonalForm = ({ setFormVisible }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    // axios.post(
-    //   "http://localhost:3000/api/v1/student/update",
-    //   {
-    //     contact_no: contact,
-    //     department,
-    //     class: classs,
-    //     dob,
-    //     current_address: currentAddress,
-    //     permanent_address: permanentAddress,
-    //     career_goals: careerGoals,
-    //     skills,
-    //   },
-    //   {
-    //     headers: {
-    //       Authorization: `Bearer ${localStorage.getItem("token")}`,
-    //     },
-    //   }
-    // );
+    try {
+      axios
+        .post(
+          "http://localhost:3000/api/v1/student/updatePersonalDetails",
+          {
+            name: user.name,
+            email: user.email,
+            contact_no: contact,
+            department,
+            studentClass: classs,
+            dob,
+            current_address: currentAddress,
+            permanent_address: permanentAddress,
+            career_goals: careerGoals,
+            skills,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data);
+          console.log(response.data.message);
+        });
+    } catch (error) {
+      console.log(error);
+    }
     console.log(user);
     setFormVisible(false);
   };
