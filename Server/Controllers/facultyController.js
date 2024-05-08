@@ -10,7 +10,6 @@ import { UploadOnCloudinary } from "../Utils/cloudinary.js";
 const generateAccessAndRefreshToken = async (_id) => {
   try {
     const user = await Faculty.findById(_id).select("-password");
-
     const accessToken = await user.generateAccessToken();
     const refreshToken = await user.generateRefreshToken();
 

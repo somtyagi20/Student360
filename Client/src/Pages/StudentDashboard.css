@@ -13,7 +13,9 @@
     backdrop-filter: blur(10px);
     background-position: center;
     background-repeat: no-repeat;
-    background-image: url("../assets/background.jpg");
+    /* background-image: url("../assets/background.jpg"); */
+    background: linear-gradient(to right, #f5f5f5, #cdacff, #6716e1);
+
     height: 300px;
     width: 100vw;
 
@@ -21,7 +23,7 @@
 }
 
 .st-details {
-    background-color: rgba(255, 255, 255, 0.336);
+    background-color: rgba(255, 255, 255, 0.597);
     backdrop-filter: blur(10px);
     height: 140px;
     width: 100vw;
@@ -33,23 +35,42 @@
     bottom: 0;
     left: 0;
     right: 0;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 100px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+
+
 }
 
-.user-image {
+.user-image-container {
+    width: 200px;
+    height: 200px;
+
+    margin-bottom: 20px;
+
+    position: absolute;
+    top: -50px;
+    left: 50px;
+    z-index: 1000;
+    text-align: center;
+    margin-left: 50px;
+}
+
+.user-image-container img {
     width: 200px;
     height: 200px;
     border-radius: 50%;
     object-fit: cover;
-    margin-top: 20px;
-    margin-left: 20px;
-    border: 5px solid white;
-    margin-bottom: 20px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
-    position: absolute;
-    top: 56px;
-    left: 100px;
-    z-index: 2;
+    border: 5px solid #6716e1;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
+
+
+
+
+
 
 .details {
     display: flex;
@@ -58,14 +79,15 @@
     align-items: flex-start;
 
 
-    margin-left: 350px;
+
 
 }
 
 .details * {
     font-family: 'Roboto', sans-serif;
-    color: #212121;
+    color: #6716e1;
     letter-spacing: 2px;
+    text-transform: capitalize;
 
 
 
@@ -74,11 +96,15 @@
 .details .detail-item span {
     font-size: 1.5rem;
     font-weight: bold;
+    text-decoration: dashed;
+    color: #212121;
+    text-shadow: 0 0 5px rgba(34, 34, 34, 0.158);
 }
 
 .details .detail-item b {
     font-size: 1.6rem;
     font-weight: bold;
+    text-shadow: 0 0 5px rgba(126, 39, 193, 0.207);
 }
 
 
@@ -94,4 +120,29 @@ b {
 
 .tabs {
     width: calc(100vw / 4);
+}
+
+.personal-details {
+    padding: 20px;
+    border-radius: 5px;
+}
+
+.personal-details table {
+    border: 1px solid #ddd;
+}
+
+.personal-item {
+    border-bottom: 1px solid #ddd;
+}
+
+.personal-item th {
+    text-align: left;
+    padding: 10px;
+    color: #634dd1;
+    text-transform: uppercase;
+}
+
+.personal-item td {
+    padding: 10px;
+    font-weight: bold;
 }

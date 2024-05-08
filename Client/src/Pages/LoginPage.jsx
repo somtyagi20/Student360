@@ -8,14 +8,19 @@ import { styled } from "@mui/material/styles";
 import Button from "@mui/material/Button";
 import LoginIcon from "@mui/icons-material/Login";
 import { Tab, Tabs } from "@mui/material";
-
+import axios from "axios";
 import "./LoginPage.css";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../context/UserContext";
+import { useContext } from "react";
 const Login = () => {
+  const navigate = useNavigate();
   const [role, setRole] = useState(0);
   const roles = ["Student", "Faculty", "Admin"];
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState(false);
+  const { user, setUser } = useContext(UserContext);
   const handleChange = (event, newValue) => {
     setRole(newValue);
   };
@@ -33,7 +38,61 @@ const Login = () => {
     event.preventDefault();
   };
   const handleLogin = () => {
-    console.log({ email: email, password: password, role: roles[role] });
+    const r = roles[role];
+    if (r === "Student") {
+      axios
+        .post("http://localhost:3000/api/v1/student/login", { email, password })
+        .then((response) => {
+          const data = response.data.data;
+          console.log(data);
+          localStorage.setItem("token", data.accessToken);
+          setUser(data.loggedInUser);
+          navigate("/student");
+        })
+        .catch((error) => {
+          // handle login error
+        });
+    } else if (r === "Faculty") {
+      try {
+        axios
+          .post("http://localhost:3000/api/v1/faculty/login", {
+            email,
+            password,
+          })
+          .then((response) => {
+            const data = response.data.data;
+            console.log(data);
+            localStorage.setItem("token", data.accessToken);
+            setUser(data.loggedInUser);
+            navigate("/faculty");
+          })
+          .catch((error) => {
+            // handle login error
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    } else if (r === "Admin") {
+      try {
+        axios
+          .post("http://localhost:3000/api/v1/admin/login", {
+            email,
+            password,
+          })
+          .then((response) => {
+            const data = response.data.data;
+            console.log(data);
+            localStorage.setItem("token", data.accessToken);
+            setUser(data.loggedInUser);
+            navigate("/admin");
+          })
+          .catch((error) => {
+            // handle login error
+          });
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 
   return (
@@ -49,11 +108,6 @@ const Login = () => {
             "& > :not(style)": { m: 1, width: "100%" },
           }}
         >
-          {/* <div className="role">
-            <button>Student</button>
-            <button>Faculty</button>
-            <button>Admin</button>
-          </div> */}
           <div className="role">
             <Tabs
               value={role}
