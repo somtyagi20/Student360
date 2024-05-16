@@ -8,12 +8,14 @@ const Achievements = () => {
   const [achievements, setAchievements] = useState([]);
   const [isFormVisible, setFormVisible] = useState(false);
   const [update, setUpdate] = useState(false);
+  const [updateID, setUpdateID] = useState("");
   const [loading, setLoading] = useState(false);
   const handleUpdateClick = () => {
     setFormVisible(true);
   };
 
   const updateAchievement = (id, data) => {
+    console.log(data);
     try {
       axios
         .post(
@@ -28,6 +30,7 @@ const Achievements = () => {
         .then((response) => {
           console.log(response.data.message);
           setUpdate(false);
+          setUpdateID("");
           getAchievements();
         });
     } catch (error) {
@@ -125,6 +128,7 @@ const Achievements = () => {
                 <button
                   onClick={() => {
                     setUpdate(true);
+                    setUpdateID(achievement._id);
                   }}
                   style={{
                     backgroundColor: "#634dd1",
@@ -138,44 +142,6 @@ const Achievements = () => {
                 >
                   Update
                 </button>
-                {update && (
-                  <div className="modal">
-                    <div className="modal-content">
-                      <form
-                        onSubmit={(e) => {
-                          e.preventDefault();
-                          const data = new FormData(e.target);
-                          for (let pair of data.entries()) {
-                            console.log(pair[0] + ", " + pair[1]);
-                          }
-                          updateAchievement(achievement._id, data);
-                        }}
-                      >
-                        <label className="file-label" htmlFor="certificate">
-                          Upload File
-                        </label>
-                        <input
-                          name="certificate"
-                          type="file"
-                          id="certificate"
-                        />
-
-                        <label htmlFor="title">Title:</label>
-                        <input
-                          name="title"
-                          type="text"
-                          placeholder="Title"
-                          id="title"
-                        />
-
-                        <label htmlFor="issue_date">Date:</label>
-                        <input name="issue_date" type="date" id="issue_date" />
-
-                        <button type="submit">Submit</button>
-                      </form>
-                    </div>
-                  </div>
-                )}
               </div>
             ))
           ) : (
@@ -232,6 +198,29 @@ const Achievements = () => {
           >
             + Add Achievements
           </button>
+        </div>
+      )}
+      {update && (
+        <div className="modal">
+          <div className="modal-content">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                const data = new FormData(e.target);
+                updateAchievement(updateID, data);
+              }}
+            >
+              <label className="file-label" htmlFor="certificate">
+                Upload File
+              </label>
+              <input name="certificate" type="file" id="certificate" />
+              <label htmlFor="title">Title:</label>
+              <input name="title" type="text" placeholder="Title" id="title" />
+              <label htmlFor="issue_date">Date:</label>
+              <input name="issue_date" type="date" id="issue_date" />
+              <button type="submit">Submit</button>
+            </form>
+          </div>
         </div>
       )}
     </div>
