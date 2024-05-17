@@ -700,6 +700,34 @@ const getProject = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, project, "Project details"));
 });
 
+const deleteProject = asyncHandler(async (req, res) => {
+  const projectId = req.query.id;
+  if (!projectId) throw new ApiError(400, "Project Id is required");
+
+  const project = await Project.findByIdAndDelete(projectId);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Project deleted successfully"));
+});
+
+const deleteExtraCurricular = asyncHandler(async (req, res) => {
+  const activityId = req.query.id;
+  if (!activityId) throw new ApiError(400, "Activity Id is required");
+
+  const activity = await ExtraCurricular.findByIdAndDelete(activityId);
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        null,
+        "Extra curricular activity deleted successfully"
+      )
+    );
+});
+
 export {
   loginStudent,
   forgotPassword,
@@ -723,4 +751,6 @@ export {
   getInternship,
   getExtraCurricular,
   getProject,
+  deleteProject,
+  deleteExtraCurricular,
 };

@@ -28,6 +28,8 @@ import {
   getInternship,
   getExtraCurricular,
   getProject,
+  deleteProject,
+  deleteExtraCurricular,
 } from "../Controllers/studentController.js";
 
 //route implementation
@@ -73,5 +75,7 @@ router.route("/getAcademicInfo").get(verifyJWT, getAcademicInfo);
 router.route("/getInternship").get(verifyJWT, getInternship);
 router.route("/getExtraCurricular").get(verifyJWT, getExtraCurricular);
 router.route("/getProject").get(verifyJWT, getProject);
+router.route("/deleteProject").delete(verifyJWT, deleteProject);
+router.route("/deleteExtraCurricular").delete(verifyJWT, deleteExtraCurricular);
 
 export default router;
