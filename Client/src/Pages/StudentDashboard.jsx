@@ -13,6 +13,7 @@ import AcademicDetails from "../Components/AcademicDetails";
 import Achievements from "../Components/Achievements";
 import axios from "axios";
 import { formatDate } from "../Config/logics";
+import Projects from "../Components/Projects";
 const StudentDashboard = () => {
   const [value, setValue] = useState(0);
   const [student, setStudent] = useState({});
@@ -259,9 +260,7 @@ const StudentDashboard = () => {
           <Achievements />
         </TabPanel>
         <TabPanel value={value} index={3}>
-          <img src="../src/assets/doc-img.png" alt="Document" />
-          <img src="../src/assets/doc-img.png" alt="Document" />
-          <img src="../src/assets/doc-img.png" alt="Document" />
+          <Projects />
         </TabPanel>
       </div>
     </div>

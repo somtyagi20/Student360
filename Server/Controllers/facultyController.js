@@ -159,7 +159,13 @@ const validateOTP = asyncHandler(async (req, res) => {
     .status(200)
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
-    .json(new ApiResponse(200, { isOTPCorrect: true }, "OTP is correct"));
+    .json(
+      new ApiResponse(
+        200,
+        { isOTPCorrect: true, accessToken },
+        "OTP is correct"
+      )
+    );
 });
 
 const setNewPassword = asyncHandler(async (req, res) => {
