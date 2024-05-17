@@ -11,7 +11,10 @@ import { Intermediate } from "../Models/IntermediateSchema.js";
 import { Project } from "../Models/ProjectSchema.js";
 import { ExtraCurricular } from "../Models/ExtraCurricularSchema.js";
 import { UploadOnCloudinary } from "../Utils/cloudinary.js";
+import { MST } from "../Models/MST.js";
 import ExcelJS from "exceljs";
+import XLSX from "xlsx";
+import fs from "fs";
 
 const generateAccessAndRefreshToken = async (_id) => {
   try {
@@ -410,22 +413,69 @@ const downloadStudentData = asyncHandler(async (req, res) => {
 });
 
 const uploadMSTMarks = asyncHandler(async (req, res) => {
-  const { student_id, marks } = req.body;
-  if (!student_id || !marks) {
-    throw new ApiError(400, "Student ID and marks are required");
+  const fileUrl = req.file?.path;
+  if (!fileUrl) {
+    throw new ApiError(401, "File is required");
+  }
+  console.log(fileUrl);
+  // Read the Excel file
+  const workbook = XLSX.readFile(fileUrl);
+
+  // Get the first worksheet (or replace 'Sheet1' with the name of the worksheet you want to convert)
+  const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+
+  // Convert the worksheet data to JSON
+  // Assume jsonData is the array of JSON objects
+  const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+  // Iterate over jsonData
+  for (let data of jsonData) {
+    // Create a new MST object
+    const mst = new MST({
+      year: data.year.toString(),
+      semester: data.semester.toString(),
+      mst_no: data.mst_no.toString(),
+      // You need to set the student field to the ObjectId of the corresponding Student document
+      // You can find the Student document by the enrollment_no field
+      student: await Student.findOne({ enrollment_no: data.enrollment_no })._id,
+    });
+
+    // Create the subject map
+    const subjectMap = new Map();
+    for (let key in data) {
+      if (
+        key !== "year" &&
+        key !== "semester" &&
+        key !== "mst_no" &&
+        key !== "enrollment_no"
+      ) {
+        subjectMap.set(key, data[key].toString());
+      }
+    }
+    mst.subject = subjectMap;
+
+    // Save the MST object
+    await mst.save();
   }
 
-  const student = await Student.findById(student_id);
-  if (!student) {
-    throw new ApiError(400, "Student does not exist");
-  }
-
-  student.ms_marks = marks;
-  await student.save({ validateBeforeSave: false });
+  fs.unlinkSync(fileUrl);
 
   return res
     .status(200)
     .json(new ApiResponse(200, null, "Marks uploaded successfully"));
+
+  // const { student_id, marks } = req.body;
+  // if (!student_id || !marks) {
+  //   throw new ApiError(400, "Student ID and marks are required");
+  // }
+
+  // const student = await Student.findById(student_id);
+  // if (!student) {
+  //   throw new ApiError(400, "Student does not exist");
+  // }
+
+  // student.ms_marks = marks;
+  // await student.save({ validateBeforeSave: false });
 });
 
 export {
@@ -439,4 +489,5 @@ export {
   updatePersonalDetails,
   updateProfilePicture,
   downloadStudentData,
+  uploadMSTMarks,
 };

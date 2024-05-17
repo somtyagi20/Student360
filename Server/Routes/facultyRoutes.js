@@ -10,6 +10,7 @@ import {
   updatePersonalDetails,
   updateProfilePicture,
   downloadStudentData,
+  uploadMSTMarks,
 } from "../Controllers/facultyController.js";
 import { verifyJWT } from "../Middlewares/authFaculty.js";
 import { upload } from "../Middlewares/multer.js";
@@ -28,5 +29,8 @@ router
   .route("/updateProfilePicture")
   .post(verifyJWT, upload.single("profile_pic"), updateProfilePicture);
 router.route("/downloadStudentData").get(verifyJWT, downloadStudentData);
+router
+  .route("/uploadMSTMarks")
+  .post(verifyJWT, upload.single("excel_file"), uploadMSTMarks);
 
 export default router;
