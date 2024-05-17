@@ -237,10 +237,10 @@ const getStudent = asyncHandler(async (req, res) => {
   intermediate = await Intermediate.findOne({
     student: req.query.id,
   });
-  project = await Project.findOne({
+  project = await Project.find({
     student: req.query.id,
   });
-  extracurricularActivity = await ExtraCurricular.findOne({
+  extracurricularActivity = await ExtraCurricular.find({
     student: req.query.id,
   });
   graduation = await Graduation.findOne({
@@ -315,7 +315,6 @@ const updateProfilePicture = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, user, "Profile picture updated successfully"));
 });
-
 
 const downloadStudentData = asyncHandler(async (req, res) => {
   const students = await Student.find({ class: req.query.class });
@@ -427,6 +426,7 @@ const uploadMSTMarks = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, null, "Marks uploaded successfully"));
+});
 
 const mailStudentsOfClass = asyncHandler(async (req, res) => {
   const { class: className } = req.body;
@@ -467,7 +467,6 @@ const mailStudentsOfClass = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, null, "Emails sent to students successfully"));
-
 });
 
 export {
@@ -480,9 +479,6 @@ export {
   getStudent,
   updatePersonalDetails,
   updateProfilePicture,
-
   downloadStudentData,
-
   mailStudentsOfClass,
-
 };

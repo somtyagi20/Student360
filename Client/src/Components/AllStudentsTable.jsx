@@ -9,6 +9,7 @@ import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import StudentView from "./StudentView";
 import {
   InputAdornment,
   TextField,
@@ -38,6 +39,8 @@ import AddIcon from "@mui/icons-material/Add";
 // ];
 
 export default function AllStudentsTable({ Class }) {
+  const [view, setView] = useState(false);
+  const [studentID, setStudentID] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleDownload = (event) => {
@@ -48,22 +51,6 @@ export default function AllStudentsTable({ Class }) {
     // Handle add marks functionality
   };
   const [rows, setRows] = useState([]);
-
-  const getStudent = async (id) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:3000/api/v1/admin/getstudent?id=${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      console.log(response.data.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   const getStudents = async (Class) => {
     try {
@@ -202,7 +189,9 @@ export default function AllStudentsTable({ Class }) {
                         color="primary"
                         onClick={() => {
                           console.log(row);
-                          getStudent(row._id);
+                          setView(true);
+                          console.log(row._id);
+                          setStudentID(row._id);
                         }}
                       >
                         View
@@ -213,6 +202,9 @@ export default function AllStudentsTable({ Class }) {
           </TableBody>
         </Table>
       </TableContainer>
+      {view && (
+        <StudentView id={studentID} setStudentView={setView} role={"admin"} />
+      )}
     </Box>
   );
 }
