@@ -152,13 +152,6 @@ export default function AllStudentsTable({ Class }) {
             sx={{
               border: 0,
               marginLeft: 2,
-              backgroundColor: "inherit",
-              height: "36px",
-              color: "#171A1FFF",
-              "&:hover": {
-                backgroundColor: "#2ba3fc",
-                color: "#FFFFFF",
-              },
             }}
             onClick={handleDownload}
             startIcon={<DownloadIcon />}

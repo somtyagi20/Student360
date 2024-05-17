@@ -156,13 +156,6 @@ export default function StudentTable({ Class }) {
             sx={{
               border: 0,
               marginLeft: 2,
-              backgroundColor: "inherit",
-              height: "36px",
-              color: "#171A1FFF",
-              "&:hover": {
-                backgroundColor: "#2ba3fc",
-                color: "#FFFFFF",
-              },
             }}
             onClick={handleDownload}
             startIcon={<DownloadIcon />}
@@ -174,18 +167,14 @@ export default function StudentTable({ Class }) {
             sx={{
               border: 0,
               marginLeft: 2,
-              backgroundColor: "inherit",
-              height: "36px",
-              color: "#171A1FFF",
-              "&:hover": {
-                backgroundColor: "#2ba3fc",
-                color: "#FFFFFF",
-              },
             }}
             onClick={handleAddmarks}
             startIcon={<AddIcon />}
           >
             Add marks
+          </Button>
+          <Button variant="contained" sx={{ marginLeft: 2 }}>
+            Send Update Notification
           </Button>
         </Box>
       </Box>
