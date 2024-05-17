@@ -316,6 +316,7 @@ const updateProfilePicture = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, user, "Profile picture updated successfully"));
 });
 
+
 const downloadStudentData = asyncHandler(async (req, res) => {
   const students = await Student.find({ class: req.query.class });
   if (students.length === 0) {
@@ -426,6 +427,47 @@ const uploadMSTMarks = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, null, "Marks uploaded successfully"));
+
+const mailStudentsOfClass = asyncHandler(async (req, res) => {
+  const { class: className } = req.body;
+  if (!className) {
+    throw new ApiError(400, "Class is required");
+  }
+
+  const students = await Student.find({ class: className });
+
+  if (students.length === 0) {
+    throw new ApiError(400, "No students found for the given class");
+  }
+
+  const transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST,
+    service: process.env.EMAIL_SERVICE,
+    port: process.env.EMAIL_PORT,
+    secure: true,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
+
+  const mailPromises = students.map((student) => {
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: student.email,
+      subject: "Reminder: Please Update Your Details",
+      text: `Dear ${student.name},\n\nWe noticed that some of your details might be outdated. We kindly request you to update them at your earliest convenience.\n\nBest Regards,\nYour Faculty`,
+    };
+
+    return transporter.sendMail(mailOptions);
+  });
+
+  await Promise.all(mailPromises);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Emails sent to students successfully"));
+
 });
 
 export {
@@ -438,5 +480,9 @@ export {
   getStudent,
   updatePersonalDetails,
   updateProfilePicture,
+
   downloadStudentData,
+
+  mailStudentsOfClass,
+
 };

@@ -47,6 +47,28 @@ export default function StudentTable({ Class }) {
   const handleAddmarks = (event) => {
     // Handle add marks functionality
   };
+
+  const handleMail = async () => {
+    try {
+      const response = await axios.post(
+        `http://localhost:3000/api/v1/faculty/mailstudents`,
+        {
+          class: Class,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      if (response.data.success) {
+        alert("Mail sent successfully");
+      }
+      console.log(response.data.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
   const [rows, setRows] = useState([]);
 
   const getStudent = async (id) => {
@@ -173,7 +195,13 @@ export default function StudentTable({ Class }) {
           >
             Add marks
           </Button>
-          <Button variant="contained" sx={{ marginLeft: 2 }}>
+          <Button
+            variant="contained"
+            sx={{ marginLeft: 2 }}
+            onClick={() => {
+              handleMail();
+            }}
+          >
             Send Update Notification
           </Button>
         </Box>
