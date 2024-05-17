@@ -9,6 +9,7 @@ import Button from "@mui/material/Button";
 import Paper from "@mui/material/Paper";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import StudentView from "./StudentView";
 import {
   InputAdornment,
   TextField,
@@ -39,6 +40,8 @@ import AddIcon from "@mui/icons-material/Add";
 
 export default function StudentTable({ Class }) {
   const [searchTerm, setSearchTerm] = useState("");
+  const [view, setView] = useState(false);
+  const [studentID, setStudentID] = useState("");
 
   const handleDownload = (event) => {
     // Handle download functionality
@@ -47,23 +50,29 @@ export default function StudentTable({ Class }) {
   const handleAddmarks = (event) => {
     // Handle add marks functionality
   };
-  const [rows, setRows] = useState([]);
 
-  const getStudent = async (id) => {
+  const handleMail = async () => {
     try {
-      const response = await axios.get(
-        `http://localhost:3000/api/v1/faculty/getstudent?id=${id}`,
+      const response = await axios.post(
+        `http://localhost:3000/api/v1/faculty/mailstudents`,
+        {
+          class: Class,
+        },
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         }
       );
+      if (response.data.success) {
+        alert("Mail sent successfully");
+      }
       console.log(response.data.data);
     } catch (error) {
       console.error(error);
     }
   };
+  const [rows, setRows] = useState([]);
 
   const getStudents = async (Class) => {
     try {
@@ -173,7 +182,13 @@ export default function StudentTable({ Class }) {
           >
             Add marks
           </Button>
-          <Button variant="contained" sx={{ marginLeft: 2 }}>
+          <Button
+            variant="contained"
+            sx={{ marginLeft: 2 }}
+            onClick={() => {
+              handleMail();
+            }}
+          >
             Send Update Notification
           </Button>
         </Box>
@@ -220,7 +235,9 @@ export default function StudentTable({ Class }) {
                         color="primary"
                         onClick={() => {
                           console.log(row);
-                          getStudent(row._id);
+                          setView(true);
+                          console.log(row._id);
+                          setStudentID(row._id);
                         }}
                       >
                         View
@@ -231,6 +248,9 @@ export default function StudentTable({ Class }) {
           </TableBody>
         </Table>
       </TableContainer>
+      {view && (
+        <StudentView id={studentID} setStudentView={setView} role={"faculty"} />
+      )}
     </Box>
   );
 }
