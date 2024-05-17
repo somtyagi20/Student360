@@ -648,13 +648,13 @@ const getAcademicInfo = asyncHandler(async (req, res) => {
   if (!user) throw new ApiError(400, "User not found");
 
   const highSchool = await HighSchool.findOne({ student: req.user._id });
-  if (!highSchool) throw new ApiError(400, "High School details not found");
 
   const intermediate = await Intermediate.findOne({ student: req.user._id });
-  if (!intermediate) throw new ApiError(400, "Intermediate details not found");
 
   const graduation = await Graduation.findOne({ student: req.user._id });
-  if (!graduation) throw new ApiError(400, "Graduation details not found");
+
+  if (!graduation && !highSchool && !intermediate)
+    throw new ApiError(400, "Academic details not found");
 
   const sgpa = await Sgpa.find({ student: req.user._id });
 
