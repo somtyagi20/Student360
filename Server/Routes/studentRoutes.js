@@ -32,7 +32,7 @@ import {
 
 //route implementation
 router.route("/login").post(loginStudent);
-router.route("/forgotPass").post(forgotPassword);
+router.route("/forgotPassword").post(forgotPassword);
 router.route("/validateOTP").post(validateOTP);
 router.route("/setNewPassword").post(verifyJWT, setNewPassword);
 router.route("/updatePersonalDetails").post(verifyJWT, updatePersonalDetails);

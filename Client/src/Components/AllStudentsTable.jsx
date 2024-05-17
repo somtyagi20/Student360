@@ -37,7 +37,7 @@ import AddIcon from "@mui/icons-material/Add";
 //   },
 // ];
 
-export default function StudentTable({ Class }) {
+export default function AllStudentsTable({ Class }) {
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleDownload = (event) => {
@@ -52,7 +52,7 @@ export default function StudentTable({ Class }) {
   const getStudent = async (id) => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/v1/faculty/getstudent?id=${id}`,
+        `http://localhost:3000/api/v1/admin/getstudent?id=${id}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -68,7 +68,7 @@ export default function StudentTable({ Class }) {
   const getStudents = async (Class) => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/v1/faculty/studentsbyclass?class=${Class}`,
+        `http://localhost:3000/api/v1/admin/studentsbyclass?class=${Class}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -107,13 +107,9 @@ export default function StudentTable({ Class }) {
         display: "flex",
         flexDirection: "column",
         alignItems: "flex-start",
-        marginLeft: 4,
+        marginLeft: "20px",
       }}
     >
-      <Typography variant="body1" color="black" fontSize={30} fontWeight={500}>
-        Student Details
-      </Typography>
-
       <Box
         sx={{
           display: "flex",
@@ -161,20 +157,6 @@ export default function StudentTable({ Class }) {
             startIcon={<DownloadIcon />}
           >
             Download Student List
-          </Button>
-          <Button
-            variant="contained"
-            sx={{
-              border: 0,
-              marginLeft: 2,
-            }}
-            onClick={handleAddmarks}
-            startIcon={<AddIcon />}
-          >
-            Add marks
-          </Button>
-          <Button variant="contained" sx={{ marginLeft: 2 }}>
-            Send Update Notification
           </Button>
         </Box>
       </Box>
