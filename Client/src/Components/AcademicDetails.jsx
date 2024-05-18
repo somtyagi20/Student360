@@ -8,23 +8,29 @@ const AcademicDetails = () => {
   const [intermediateData, setIntermediateData] = useState({});
   const [graduationData, setGraduationData] = useState({});
   const [loading, setLoading] = useState(false);
-  const getAcademicDetails = () => {
+  const getAcademicDetails = async () => {
     setLoading(true);
-    axios
-      .get("http://localhost:3000/api/v1/student/getAcademicInfo", {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      })
-      .then((res) => {
-        const data = res.data.data;
-        setHighSchoolData(data.highSchool);
-        setIntermediateData(data.intermediate);
-        setGraduationData(data.graduation);
-        setSGPA(data.sgpa);
-        setLoading(false);
-        console.log(data);
-      });
+    try {
+      const res = await axios.get(
+        "http://localhost:3000/api/v1/student/getAcademicInfo",
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+
+      const data = res.data.data;
+
+      setHighSchoolData(data.highSchool);
+      setIntermediateData(data.intermediate);
+      setGraduationData(data.graduation);
+      setSGPA(data.sgpa);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   };
   useEffect(() => {
     getAcademicDetails();

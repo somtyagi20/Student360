@@ -28,11 +28,13 @@ import {
   getInternship,
   getExtraCurricular,
   getProject,
+  deleteProject,
+  deleteExtraCurricular,
 } from "../Controllers/studentController.js";
 
 //route implementation
 router.route("/login").post(loginStudent);
-router.route("/forgotPass").post(forgotPassword);
+router.route("/forgotPassword").post(forgotPassword);
 router.route("/validateOTP").post(validateOTP);
 router.route("/setNewPassword").post(verifyJWT, setNewPassword);
 router.route("/updatePersonalDetails").post(verifyJWT, updatePersonalDetails);
@@ -73,5 +75,7 @@ router.route("/getAcademicInfo").get(verifyJWT, getAcademicInfo);
 router.route("/getInternship").get(verifyJWT, getInternship);
 router.route("/getExtraCurricular").get(verifyJWT, getExtraCurricular);
 router.route("/getProject").get(verifyJWT, getProject);
+router.route("/deleteProject").delete(verifyJWT, deleteProject);
+router.route("/deleteExtraCurricular").delete(verifyJWT, deleteExtraCurricular);
 
 export default router;

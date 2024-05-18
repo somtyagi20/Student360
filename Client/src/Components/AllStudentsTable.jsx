@@ -38,10 +38,10 @@ import AddIcon from "@mui/icons-material/Add";
 //   },
 // ];
 
-export default function StudentTable({ Class }) {
-  const [searchTerm, setSearchTerm] = useState("");
+export default function AllStudentsTable({ Class }) {
   const [view, setView] = useState(false);
   const [studentID, setStudentID] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleDownload = (event) => {
     // Handle download functionality
@@ -50,34 +50,12 @@ export default function StudentTable({ Class }) {
   const handleAddmarks = (event) => {
     // Handle add marks functionality
   };
-
-  const handleMail = async () => {
-    try {
-      const response = await axios.post(
-        `http://localhost:3000/api/v1/faculty/mailstudents`,
-        {
-          class: Class,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
-      if (response.data.success) {
-        alert("Mail sent successfully");
-      }
-      console.log(response.data.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
   const [rows, setRows] = useState([]);
 
   const getStudents = async (Class) => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/v1/faculty/studentsbyclass?class=${Class}`,
+        `http://localhost:3000/api/v1/admin/studentsbyclass?class=${Class}`,
         {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -116,13 +94,9 @@ export default function StudentTable({ Class }) {
         display: "flex",
         flexDirection: "column",
         alignItems: "flex-start",
-        marginLeft: 4,
+        marginLeft: "20px",
       }}
     >
-      <Typography variant="body1" color="black" fontSize={30} fontWeight={500}>
-        Student Details
-      </Typography>
-
       <Box
         sx={{
           display: "flex",
@@ -170,26 +144,6 @@ export default function StudentTable({ Class }) {
             startIcon={<DownloadIcon />}
           >
             Download Student List
-          </Button>
-          <Button
-            variant="contained"
-            sx={{
-              border: 0,
-              marginLeft: 2,
-            }}
-            onClick={handleAddmarks}
-            startIcon={<AddIcon />}
-          >
-            Add marks
-          </Button>
-          <Button
-            variant="contained"
-            sx={{ marginLeft: 2 }}
-            onClick={() => {
-              handleMail();
-            }}
-          >
-            Send Update Notification
           </Button>
         </Box>
       </Box>
@@ -249,7 +203,7 @@ export default function StudentTable({ Class }) {
         </Table>
       </TableContainer>
       {view && (
-        <StudentView id={studentID} setStudentView={setView} role={"faculty"} />
+        <StudentView id={studentID} setStudentView={setView} role={"admin"} />
       )}
     </Box>
   );

@@ -155,7 +155,18 @@ const Login = () => {
               label="Password"
             />
           </FormControl>
-          <a href="http://" target="_blank" rel="noopener noreferrer">
+          <a
+            href="#"
+            onClick={() => {
+              if (role === 0) {
+                navigate("/forgotpassword/student");
+              } else if (role === 1) {
+                navigate("/forgotpassword/faculty");
+              } else {
+                navigate("/forgotpassword/admin");
+              }
+            }}
+          >
             Forgot password?
           </a>
           <Button

@@ -157,7 +157,13 @@ const validateOTP = asyncHandler(async (req, res) => {
     .status(200)
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
-    .json(new ApiResponse(200, { isOTPCorrect: true }, "OTP is correct"));
+    .json(
+      new ApiResponse(
+        200,
+        { isOTPCorrect: true, accessToken },
+        "OTP is correct"
+      )
+    );
 });
 
 const setNewPassword = asyncHandler(async (req, res) => {
@@ -646,6 +652,7 @@ const getAcademicInfo = asyncHandler(async (req, res) => {
   const intermediate = await Intermediate.findOne({ student: req.user._id });
 
   const graduation = await Graduation.findOne({ student: req.user._id });
+  if (!graduation) throw new ApiError(400, "Graduation details not found");
 
   const sgpa = await Sgpa.find({ student: req.user._id });
 
@@ -691,6 +698,34 @@ const getProject = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, project, "Project details"));
 });
 
+const deleteProject = asyncHandler(async (req, res) => {
+  const projectId = req.query.id;
+  if (!projectId) throw new ApiError(400, "Project Id is required");
+
+  const project = await Project.findByIdAndDelete(projectId);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Project deleted successfully"));
+});
+
+const deleteExtraCurricular = asyncHandler(async (req, res) => {
+  const activityId = req.query.id;
+  if (!activityId) throw new ApiError(400, "Activity Id is required");
+
+  const activity = await ExtraCurricular.findByIdAndDelete(activityId);
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        null,
+        "Extra curricular activity deleted successfully"
+      )
+    );
+});
+
 export {
   loginStudent,
   forgotPassword,
@@ -714,4 +749,6 @@ export {
   getInternship,
   getExtraCurricular,
   getProject,
+  deleteProject,
+  deleteExtraCurricular,
 };
