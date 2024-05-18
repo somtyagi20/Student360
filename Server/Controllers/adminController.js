@@ -7,6 +7,11 @@ import nodemailer from "nodemailer";
 import { Student } from "../Models/StudentSchema.js";
 import { Faculty } from "../Models/FacultySchema.js";
 import { UploadOnCloudinary } from "../Utils/cloudinary.js";
+import { HighSchool } from "../Models/HighSchoolSchema.js";
+import { Intermediate } from "../Models/IntermediateSchema.js";
+import { Project } from "../Models/ProjectSchema.js";
+import { ExtraCurricular } from "../Models/ExtraCurricularSchema.js";
+import { Graduation } from "../Models/GraduationSchema.js";
 
 const generateAccessAndRefreshToken = async (_id) => {
   try {
@@ -161,7 +166,13 @@ const validateOTP = asyncHandler(async (req, res) => {
     .status(200)
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
-    .json(new ApiResponse(200, { isOTPCorrect: true }, "OTP is correct"));
+    .json(
+      new ApiResponse(
+        200,
+        { isOTPCorrect: true, accessToken },
+        "OTP is correct"
+      )
+    );
 });
 
 const setNewPassword = asyncHandler(async (req, res) => {
@@ -215,11 +226,44 @@ const studentsByClass = asyncHandler(async (req, res) => {
 const getStudent = asyncHandler(async (req, res) => {
   const user = await Admin.findById(req.user._id);
   let student;
+  let highSchool;
+  let intermediate;
+  let project;
+  let extracurricularActivity;
+  let graduation;
+
+  highSchool = await HighSchool.findOne({
+    student: req.query.id,
+  });
+  intermediate = await Intermediate.findOne({
+    student: req.query.id,
+  });
+  project = await Project.find({
+    student: req.query.id,
+  });
+  extracurricularActivity = await ExtraCurricular.find({
+    student: req.query.id,
+  });
+  graduation = await Graduation.findOne({
+    student: req.query.id,
+  });
+
   if (user) {
     student = await Student.findById(req.query.id);
-    return res
-      .status(200)
-      .json(new ApiResponse(200, student, "Student fetched successfully"));
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          student,
+          highSchool,
+          intermediate,
+          project,
+          extracurricularActivity,
+          graduation,
+        },
+        "Student fetched successfully"
+      )
+    );
   } else {
     throw new ApiError(400, "Not authorized to access this route");
   }

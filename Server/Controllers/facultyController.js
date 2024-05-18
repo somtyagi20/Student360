@@ -4,8 +4,17 @@ import { ApiResponse } from "../Utils/apiResponse.js";
 import { v4 as uuidv4 } from "uuid";
 import nodemailer from "nodemailer";
 import { Student } from "../Models/StudentSchema.js";
+import { Graduation } from "../Models/GraduationSchema.js";
 import { Faculty } from "../Models/FacultySchema.js";
+import { HighSchool } from "../Models/HighSchoolSchema.js";
+import { Intermediate } from "../Models/IntermediateSchema.js";
+import { Project } from "../Models/ProjectSchema.js";
+import { ExtraCurricular } from "../Models/ExtraCurricularSchema.js";
 import { UploadOnCloudinary } from "../Utils/cloudinary.js";
+import { MST } from "../Models/MST.js";
+import ExcelJS from "exceljs";
+import XLSX from "xlsx";
+import fs from "fs";
 
 const generateAccessAndRefreshToken = async (_id) => {
   try {
@@ -159,7 +168,13 @@ const validateOTP = asyncHandler(async (req, res) => {
     .status(200)
     .cookie("accessToken", accessToken, options)
     .cookie("refreshToken", refreshToken, options)
-    .json(new ApiResponse(200, { isOTPCorrect: true }, "OTP is correct"));
+    .json(
+      new ApiResponse(
+        200,
+        { isOTPCorrect: true, accessToken },
+        "OTP is correct"
+      )
+    );
 });
 
 const setNewPassword = asyncHandler(async (req, res) => {
@@ -213,11 +228,44 @@ const studentsByClass = asyncHandler(async (req, res) => {
 const getStudent = asyncHandler(async (req, res) => {
   const user = await Faculty.findById(req.user._id);
   let student;
+  let highSchool;
+  let intermediate;
+  let project;
+  let extracurricularActivity;
+  let graduation;
+
+  highSchool = await HighSchool.findOne({
+    student: req.query.id,
+  });
+  intermediate = await Intermediate.findOne({
+    student: req.query.id,
+  });
+  project = await Project.find({
+    student: req.query.id,
+  });
+  extracurricularActivity = await ExtraCurricular.find({
+    student: req.query.id,
+  });
+  graduation = await Graduation.findOne({
+    student: req.query.id,
+  });
+
   if (user) {
     student = await Student.findById(req.query.id);
-    return res
-      .status(200)
-      .json(new ApiResponse(200, student, "Student fetched successfully"));
+    return res.status(200).json(
+      new ApiResponse(
+        200,
+        {
+          student,
+          highSchool,
+          intermediate,
+          project,
+          extracurricularActivity,
+          graduation,
+        },
+        "Student fetched successfully"
+      )
+    );
   } else {
     throw new ApiError(400, "Not authorized to access this route");
   }
@@ -271,6 +319,206 @@ const updateProfilePicture = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, user, "Profile picture updated successfully"));
 });
 
+const downloadStudentData = asyncHandler(async (req, res) => {
+  const students = await Student.find({ class: req.query.class });
+  if (students.length === 0) {
+    throw new ApiError(400, "No students found");
+  }
+  const highSchools = await HighSchool.find({
+    student: { $in: students.map((s) => s._id) },
+  });
+  const intermediates = await Intermediate.find({
+    student: { $in: students.map((s) => s._id) },
+  });
+  const projects = await Project.find({
+    student: { $in: students.map((s) => s._id) },
+  });
+  const extracurricularActivities = await ExtraCurricular.find({
+    student: { $in: students.map((s) => s._id) },
+  });
+
+  const mergedData = students.map((student) => {
+    const highSchool = highSchools.find((h) => h.student.equals(student._id));
+    const intermediate = intermediates.find((i) =>
+      i.student.equals(student._id)
+    );
+    const project = projects.find((p) => p.student.equals(student._id));
+    const extracurricularActivity = extracurricularActivities.find((e) =>
+      e.student.equals(student._id)
+    );
+
+    return {
+      ...student.toObject(),
+      ...(highSchool ? highSchool.toObject() : {}),
+      ...(intermediate ? intermediate.toObject() : {}),
+      ...(project ? project.toObject() : {}),
+      ...(extracurricularActivity ? extracurricularActivity.toObject() : {}),
+    };
+  });
+
+  console.log(mergedData);
+
+  const fields = [
+    "name",
+    "enrollment_no",
+    "email",
+    "contact_no",
+    "class",
+    "current_address",
+    "permanent_address",
+    "career_goals",
+    "skills",
+    "dob",
+    "highSchool.name",
+    "highSchool.address",
+    "highSchool.board_of_education",
+    "highSchool.passing_year",
+    "highSchool.percentage",
+    "intermediate.name",
+    "intermediate.address",
+    "intermediate.board_of_education",
+    "intermediate.passing_year",
+    "intermediate.percentage",
+    "project.title",
+    "project.description",
+    "project.technologies",
+    "extracurricularActivity.title",
+    "extracurricularActivity.issue_date",
+    "extracurricularActivity.certificate",
+  ];
+
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet("Students");
+
+  // Define columns
+  const columns = fields.map((field) => {
+    return { header: field, key: field };
+  });
+
+  worksheet.columns = columns;
+
+  // Add rows
+  mergedData.forEach((data) => {
+    worksheet.addRow(data);
+  });
+
+  res.setHeader(
+    "Content-Type",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  );
+  res.setHeader("Content-Disposition", "attachment; filename=students.xlsx");
+
+  await workbook.xlsx.writeFile("students.xlsx");
+  return res.status(200).end();
+});
+
+const uploadMSTMarks = asyncHandler(async (req, res) => {
+  const fileUrl = req.file?.path;
+  if (!fileUrl) {
+    throw new ApiError(401, "File is required");
+  }
+  console.log(fileUrl);
+  // Read the Excel file
+  const workbook = XLSX.readFile(fileUrl);
+
+  // Get the first worksheet (or replace 'Sheet1' with the name of the worksheet you want to convert)
+  const worksheet = workbook.Sheets[workbook.SheetNames[0]];
+
+  // Convert the worksheet data to JSON
+  // Assume jsonData is the array of JSON objects
+  const jsonData = XLSX.utils.sheet_to_json(worksheet);
+
+  // Iterate over jsonData
+  for (let data of jsonData) {
+    // Create a new MST object
+    const mst = new MST({
+      year: data.year.toString(),
+      semester: data.semester.toString(),
+      mst_no: data.mst_no.toString(),
+      // You need to set the student field to the ObjectId of the corresponding Student document
+      // You can find the Student document by the enrollment_no field
+      student: await Student.findOne({ enrollment_no: data.enrollment_no })._id,
+    });
+
+    // Create the subject map
+    const subjectMap = new Map();
+    for (let key in data) {
+      if (
+        key !== "year" &&
+        key !== "semester" &&
+        key !== "mst_no" &&
+        key !== "enrollment_no"
+      ) {
+        subjectMap.set(key, data[key].toString());
+      }
+    }
+    mst.subject = subjectMap;
+
+    // Save the MST object
+    await mst.save();
+  }
+
+  fs.unlinkSync(fileUrl);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Marks uploaded successfully"));
+
+  // const { student_id, marks } = req.body;
+  // if (!student_id || !marks) {
+  //   throw new ApiError(400, "Student ID and marks are required");
+  // }
+
+  // const student = await Student.findById(student_id);
+  // if (!student) {
+  //   throw new ApiError(400, "Student does not exist");
+  // }
+
+  // student.ms_marks = marks;
+  // await student.save({ validateBeforeSave: false });
+});
+
+const mailStudentsOfClass = asyncHandler(async (req, res) => {
+  const { class: className } = req.body;
+  if (!className) {
+    throw new ApiError(400, "Class is required");
+  }
+
+  const students = await Student.find({ class: className });
+
+  if (students.length === 0) {
+    throw new ApiError(400, "No students found for the given class");
+  }
+
+  const transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST,
+    service: process.env.EMAIL_SERVICE,
+    port: process.env.EMAIL_PORT,
+    secure: true,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
+
+  const mailPromises = students.map((student) => {
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: student.email,
+      subject: "Reminder: Please Update Your Details",
+      text: `Dear ${student.name},\n\nWe noticed that some of your details might be outdated. We kindly request you to update them at your earliest convenience.\n\nBest Regards,\nYour Faculty`,
+    };
+
+    return transporter.sendMail(mailOptions);
+  });
+
+  await Promise.all(mailPromises);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Emails sent to students successfully"));
+});
+
 export {
   loginFaculty,
   forgotPassword,
@@ -281,4 +529,10 @@ export {
   getStudent,
   updatePersonalDetails,
   updateProfilePicture,
+  downloadStudentData,
+
+  mailStudentsOfClass,
+
+  uploadMSTMarks,
+
 };
