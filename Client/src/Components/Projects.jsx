@@ -2,6 +2,9 @@ import React from "react";
 import { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import "./Projects.css";
+import { IconButton } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+
 const Projects = () => {
   const [projects, setProjects] = useState([]);
   const [updateProjectVisible, setUpdateProjectVisible] = useState(false);
@@ -13,6 +16,25 @@ const Projects = () => {
     const selectedFiles = Array.from(event.target.files);
 
     setFiles(selectedFiles);
+  };
+
+  const deleteProject = async (id) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:3000/api/v1/student/deleteProject?id=${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      );
+      if (response.data.success) {
+        console.log(response.data.message);
+        getProjects();
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const getProjects = async () => {
@@ -111,6 +133,18 @@ const Projects = () => {
                 borderStyle: "groove",
               }}
             >
+              <IconButton
+                sx={{
+                  marginLeft: "auto",
+                }}
+              >
+                <DeleteIcon
+                  onClick={() => {
+                    deleteProject(project._id);
+                  }}
+                  sx={{ color: "lightgrey" }}
+                />
+              </IconButton>
               <h2
                 style={{
                   color: "#634dd1",
