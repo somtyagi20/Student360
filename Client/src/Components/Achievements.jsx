@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import "./Achievements.css";
 import { CircularProgress } from "@mui/material";
 import { formatDate } from "../Config/logics";
+import DeleteIcon from "@mui/icons-material/Delete";
+import IconButton from "@mui/material/IconButton";
 
 const Achievements = () => {
   const [achievements, setAchievements] = useState([]);
@@ -12,6 +14,26 @@ const Achievements = () => {
   const [loading, setLoading] = useState(false);
   const handleUpdateClick = () => {
     setFormVisible(true);
+  };
+
+  const deleteAchievement = (id) => {
+    try {
+      axios
+        .delete(
+          `http://localhost:3000/api/v1/student/deleteExtraCurricular?id=${id}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        )
+        .then((response) => {
+          console.log(response.data.message);
+          getAchievements();
+        });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const updateAchievement = (id, data) => {
@@ -119,6 +141,18 @@ const Achievements = () => {
                   width: "300px",
                 }}
               >
+                <IconButton
+                  sx={{
+                    marginLeft: "auto",
+                  }}
+                >
+                  <DeleteIcon
+                    onClick={() => {
+                      deleteAchievement(achievement._id);
+                    }}
+                    sx={{ color: "lightgrey" }}
+                  />
+                </IconButton>
                 <a href={achievement.certificate} target="_blank">
                   <img src="../src/assets/doc-img.png" alt="Certificate" />
                 </a>
@@ -138,6 +172,7 @@ const Achievements = () => {
                     borderRadius: "5px",
                     cursor: "pointer",
                     fontSize: "1rem",
+                    marginTop: "10px",
                   }}
                 >
                   Update

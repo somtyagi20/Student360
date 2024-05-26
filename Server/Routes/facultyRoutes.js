@@ -9,15 +9,9 @@ import {
   getStudent,
   updatePersonalDetails,
   updateProfilePicture,
-
   downloadStudentData,
-
-
   mailStudentsOfClass,
-
-
   uploadMSTMarks,
-
 } from "../Controllers/facultyController.js";
 import { verifyJWT } from "../Middlewares/authFaculty.js";
 import { upload } from "../Middlewares/multer.js";
