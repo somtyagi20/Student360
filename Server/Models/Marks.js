@@ -1,6 +1,6 @@
 import mongoose, { Schema } from "mongoose";
 
-const MSTSchema = new Schema(
+const MarksSchema = new Schema(
   {
     year: {
       type: String,
@@ -10,7 +10,7 @@ const MSTSchema = new Schema(
       type: String,
       required: true,
     },
-    mst_no: {
+    title: {
       type: String,
       required: true,
     },
@@ -23,10 +23,14 @@ const MSTSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Student",
     },
+    category: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-export const MST = mongoose.model("MST", MSTSchema);
+export const Marks = mongoose.model("Mark", MarksSchema);

@@ -11,7 +11,7 @@ import { Intermediate } from "../Models/IntermediateSchema.js";
 import { Project } from "../Models/ProjectSchema.js";
 import { ExtraCurricular } from "../Models/ExtraCurricularSchema.js";
 import { UploadOnCloudinary } from "../Utils/cloudinary.js";
-import { MST } from "../Models/MST.js";
+import { Marks } from "../Models/Marks.js";
 import ExcelJS from "exceljs";
 import XLSX from "xlsx";
 import fs from "fs";
@@ -412,12 +412,12 @@ const downloadStudentData = asyncHandler(async (req, res) => {
   return res.status(200).end();
 });
 
-const uploadMSTMarks = asyncHandler(async (req, res) => {
+const uploadMarks = asyncHandler(async (req, res) => {
   const fileUrl = req.file?.path;
   if (!fileUrl) {
     throw new ApiError(401, "File is required");
   }
-  console.log(fileUrl);
+  const { category, title } = req.body;
   // Read the Excel file
   const workbook = XLSX.readFile(fileUrl);
 
@@ -428,33 +428,23 @@ const uploadMSTMarks = asyncHandler(async (req, res) => {
   // Assume jsonData is the array of JSON objects
   const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
-  // Iterate over jsonData
   for (let data of jsonData) {
-    // Create a new MST object
-    const mst = new MST({
+    const marks = new Marks({
       year: data.year.toString(),
       semester: data.semester.toString(),
-      mst_no: data.mst_no.toString(),
-      // You need to set the student field to the ObjectId of the corresponding Student document
-      // You can find the Student document by the enrollment_no field
+      category,
+      title,
       student: await Student.findOne({ enrollment_no: data.enrollment_no })._id,
     });
 
     // Create the subject map
     const subjectMap = new Map();
     for (let key in data) {
-      if (
-        key !== "year" &&
-        key !== "semester" &&
-        key !== "mst_no" &&
-        key !== "enrollment_no"
-      ) {
+      if (key !== "year" && key !== "semester" && key !== "enrollment_no") {
         subjectMap.set(key, data[key].toString());
       }
     }
-    mst.subject = subjectMap;
-
-    // Save the MST object
+    marks.subject = subjectMap;
     await mst.save();
   }
 
@@ -463,23 +453,10 @@ const uploadMSTMarks = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, null, "Marks uploaded successfully"));
-
-  // const { student_id, marks } = req.body;
-  // if (!student_id || !marks) {
-  //   throw new ApiError(400, "Student ID and marks are required");
-  // }
-
-  // const student = await Student.findById(student_id);
-  // if (!student) {
-  //   throw new ApiError(400, "Student does not exist");
-  // }
-
-  // student.ms_marks = marks;
-  // await student.save({ validateBeforeSave: false });
 });
 
 const mailStudentsOfClass = asyncHandler(async (req, res) => {
-  const { class: className } = req.body;
+  const { class: className, msg } = req.body;
   if (!className) {
     throw new ApiError(400, "Class is required");
   }
@@ -506,7 +483,7 @@ const mailStudentsOfClass = asyncHandler(async (req, res) => {
       from: process.env.EMAIL_USER,
       to: student.email,
       subject: "Reminder: Please Update Your Details",
-      text: `Dear ${student.name},\n\nWe noticed that some of your details might be outdated. We kindly request you to update them at your earliest convenience.\n\nBest Regards,\nYour Faculty`,
+      text: msg,
     };
 
     return transporter.sendMail(mailOptions);
@@ -530,9 +507,6 @@ export {
   updatePersonalDetails,
   updateProfilePicture,
   downloadStudentData,
-
   mailStudentsOfClass,
-
-  uploadMSTMarks,
-
+  uploadMarks,
 };

@@ -57,6 +57,9 @@ const studentSchema = new mongoose.Schema(
     resetPasswordTokenExpires: {
       type: Date,
     },
+    pass_photo: {
+      type: String,
+    },
   },
   {
     timestamps: true,
