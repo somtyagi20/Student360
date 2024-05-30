@@ -33,6 +33,7 @@ import {
   uploadPlacementDetail,
   deleteInternship,
   deletePlacementDetail,
+  getPlacementDetail,
 } from "../Controllers/studentController.js";
 
 //route implementation
@@ -91,10 +92,11 @@ router.route("/getProject").get(verifyJWT, getProject);
 router.route("/deleteProject").delete(verifyJWT, deleteProject);
 router.route("/deleteExtraCurricular").delete(verifyJWT, deleteExtraCurricular);
 router
-  .route("uploadPlacementDetail")
+  .route("/uploadPlacementDetail")
   .post(verifyJWT, upload.single("offerLetter"), uploadPlacementDetail);
 
-router.route("deleteInternship").delete(verifyJWT, deleteInternship);
-router.route("deletePlacement").delete(verifyJWT, deletePlacementDetail);
+router.route("/deleteInternship").delete(verifyJWT, deleteInternship);
+router.route("/deletePlacement").delete(verifyJWT, deletePlacementDetail);
+router.route("/getPlacement").get(verifyJWT, getPlacementDetail);
 
 export default router;
