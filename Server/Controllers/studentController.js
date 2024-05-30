@@ -213,6 +213,8 @@ const updatePersonalDetails = asyncHandler(async (req, res) => {
     permanent_address,
     career_goals,
     skills,
+    github,
+    linkedin,
   } = req.body;
 
   const fileUrl = req.file?.path;
@@ -238,6 +240,8 @@ const updatePersonalDetails = asyncHandler(async (req, res) => {
       permanent_address,
       career_goals,
       skills,
+      github,
+      linkedin,
       pass_photo: response.url,
     },
     { new: true }
@@ -815,7 +819,7 @@ const uploadPlacementDetail = asyncHandler(async (req, res) => {
   const placementDetail = await Placement.create({
     student: req.user._id,
     company: company,
-    offerLetterUrl: response.url,
+    offerLetter: response.url,
   });
 
   return res
@@ -842,6 +846,17 @@ const deletePlacementDetail = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, null, "Placement detail deleted successfully"));
+});
+
+const getPlacementDetail = asyncHandler(async (req, res) => {
+  const placement = await Placement.find({ student: req.user._id });
+  if (!placement) {
+    throw new ApiError(400, "Placement details not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, placement, "Placement details"));
 });
 
 export {
@@ -872,4 +887,5 @@ export {
   uploadPlacementDetail,
   deleteInternship,
   deletePlacementDetail,
+  getPlacementDetail,
 };

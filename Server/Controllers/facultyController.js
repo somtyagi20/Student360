@@ -417,10 +417,14 @@ const uploadMarks = asyncHandler(async (req, res) => {
   if (!fileUrl) {
     throw new ApiError(401, "File is required");
   }
+  console.log(fileUrl);
+
   const { year, semester, title } = req.body;
+
   const workbook = XLSX.readFile(fileUrl);
   const worksheet = workbook.Sheets[workbook.SheetNames[0]];
   const jsonData = XLSX.utils.sheet_to_json(worksheet);
+  console.log(jsonData);
 
   for (let data of jsonData) {
     const student = await Student.findOne({

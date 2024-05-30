@@ -60,6 +60,12 @@ const studentSchema = new mongoose.Schema(
     pass_photo: {
       type: String,
     },
+    github: {
+      type: String,
+    },
+    linkedin: {
+      type: String,
+    },
   },
   {
     timestamps: true,
