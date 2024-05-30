@@ -10,7 +10,7 @@ const parentSchema = new mongoose.Schema({
   contact_no: {
     type: String,
   },
-  students: {
+  student: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Student",
   },
