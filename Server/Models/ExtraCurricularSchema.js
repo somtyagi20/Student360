@@ -17,6 +17,10 @@ const extraCurricularSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "Student",
   },
+  category: {
+    type: String,
+    required: true,
+  },
 });
 
 export const ExtraCurricular = mongoose.model(

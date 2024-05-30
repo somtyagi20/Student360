@@ -7,9 +7,15 @@ const sgpaSchema = new mongoose.Schema({
   },
   current_semester: {
     type: Number,
+    required: true,
   },
   sgpa: {
     type: Number,
+    required: true,
+  },
+  marksheet: {
+    type: String,
+    required: true,
   },
 });
 
