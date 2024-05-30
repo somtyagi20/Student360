@@ -11,6 +11,7 @@ import {
   giveAccess,
   updatePersonalDetails,
   updateProfilePicture,
+  mailStudentsOfClass,
 } from "../Controllers/adminController.js";
 import { verifyJWT } from "../Middlewares/authAdmin.js ";
 import { upload } from "../Middlewares/multer.js";
@@ -30,5 +31,6 @@ router.route("/giveaccess").post(verifyJWT, giveAccess);
 router
   .route("/updateProfilePicture")
   .post(verifyJWT, upload.single("profile_pic"), updateProfilePicture);
+router.route("/mailstudents").post(verifyJWT, mailStudentsOfClass);
 
 export default router;

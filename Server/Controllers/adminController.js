@@ -337,6 +337,47 @@ const updateProfilePicture = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, user, "Profile picture updated successfully"));
 });
 
+const mailStudentsOfClass = asyncHandler(async (req, res) => {
+  const { className, msg } = req.body;
+  if (!className) {
+    throw new ApiError(400, "Class is required");
+  }
+
+  const students = await Student.find({ class: className });
+
+  if (students.length === 0) {
+    throw new ApiError(400, "No students found for the given class");
+  }
+
+  const transporter = nodemailer.createTransport({
+    host: process.env.EMAIL_HOST,
+    service: process.env.EMAIL_SERVICE,
+    port: process.env.EMAIL_PORT,
+    secure: true,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASSWORD,
+    },
+  });
+
+  const mailPromises = students.map((student) => {
+    const mailOptions = {
+      from: process.env.EMAIL_USER,
+      to: student.email,
+      subject: "Reminder: Please Update Your Details",
+      text: msg,
+    };
+
+    return transporter.sendMail(mailOptions);
+  });
+
+  await Promise.all(mailPromises);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Emails sent to students successfully"));
+});
+
 export {
   loginAdmin,
   forgotPassword,
@@ -349,4 +390,5 @@ export {
   giveAccess,
   updatePersonalDetails,
   updateProfilePicture,
+  mailStudentsOfClass,
 };
