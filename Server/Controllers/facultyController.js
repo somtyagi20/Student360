@@ -417,35 +417,35 @@ const uploadMarks = asyncHandler(async (req, res) => {
   if (!fileUrl) {
     throw new ApiError(401, "File is required");
   }
-  const { category, title } = req.body;
-  // Read the Excel file
+  const { year, semester, title } = req.body;
   const workbook = XLSX.readFile(fileUrl);
-
-  // Get the first worksheet (or replace 'Sheet1' with the name of the worksheet you want to convert)
   const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-
-  // Convert the worksheet data to JSON
-  // Assume jsonData is the array of JSON objects
   const jsonData = XLSX.utils.sheet_to_json(worksheet);
 
   for (let data of jsonData) {
+    const student = await Student.findOne({
+      enrollment_no: data.Enrollment_no,
+    });
     const marks = new Marks({
-      year: data.year.toString(),
-      semester: data.semester.toString(),
-      category,
+      year,
+      semester,
       title,
-      student: await Student.findOne({ enrollment_no: data.enrollment_no })._id,
+      student: student._id,
     });
 
-    // Create the subject map
-    const subjectMap = new Map();
+    const subjectMap = {};
     for (let key in data) {
-      if (key !== "year" && key !== "semester" && key !== "enrollment_no") {
-        subjectMap.set(key, data[key].toString());
+      if (
+        key !== "Year" &&
+        key !== "Semester" &&
+        key !== "Enrollment_no" &&
+        key !== "Name"
+      ) {
+        subjectMap[key] = data[key].toString();
       }
     }
     marks.subject = subjectMap;
-    await mst.save();
+    await marks.save();
   }
 
   fs.unlinkSync(fileUrl);

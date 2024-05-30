@@ -23,10 +23,6 @@ const MarksSchema = new Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "Student",
     },
-    category: {
-      type: String,
-      required: true,
-    },
   },
   {
     timestamps: true,
