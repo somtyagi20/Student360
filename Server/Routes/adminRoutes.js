@@ -12,6 +12,8 @@ import {
   updatePersonalDetails,
   updateProfilePicture,
   mailStudentsOfClass,
+  downloadStudentData,
+  filteredStudentData,
 } from "../Controllers/adminController.js";
 import { verifyJWT } from "../Middlewares/authAdmin.js ";
 import { upload } from "../Middlewares/multer.js";
@@ -32,5 +34,7 @@ router
   .route("/updateProfilePicture")
   .post(verifyJWT, upload.single("profile_pic"), updateProfilePicture);
 router.route("/mailstudents").post(verifyJWT, mailStudentsOfClass);
+router.route("/downloadStudentData").get(verifyJWT, downloadStudentData);
+router.route("/filteredStudentData").get(verifyJWT, filteredStudentData);
 
 export default router;
