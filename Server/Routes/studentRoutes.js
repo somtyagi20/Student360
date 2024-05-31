@@ -20,7 +20,7 @@ import {
   uploadExtraCurricular,
   updateExtraCurricular,
   getUserDetails,
-  getMSTMarks,
+  getMarks,
   refreshAccessToken,
   validateOTP,
   setNewPassword,
@@ -30,6 +30,10 @@ import {
   getProject,
   deleteProject,
   deleteExtraCurricular,
+  uploadPlacementDetail,
+  deleteInternship,
+  deletePlacementDetail,
+  getPlacementDetail,
 } from "../Controllers/studentController.js";
 
 //route implementation
@@ -37,7 +41,10 @@ router.route("/login").post(loginStudent);
 router.route("/forgotPassword").post(forgotPassword);
 router.route("/validateOTP").post(validateOTP);
 router.route("/setNewPassword").post(verifyJWT, setNewPassword);
-router.route("/updatePersonalDetails").post(verifyJWT, updatePersonalDetails);
+
+router
+  .route("/updatePersonalDetails")
+  .post(verifyJWT, upload.single("pass_photo"), updatePersonalDetails);
 
 router
   .route("/updateHighSchoolDetails")
@@ -49,16 +56,23 @@ router
 
 router
   .route("/updateGraduationDetails")
-  .post(verifyJWT, updateGraduationDetails);
+  .post(verifyJWT, upload.single("marksheet"), updateGraduationDetails);
 
 router
   .route("/updateProfilePicture")
   .post(verifyJWT, upload.single("profile_pic"), updateProfilePicture);
 
 router.route("/uploadProject").post(verifyJWT, upload.any(), uploadProject);
+
 router.route("/updateProject").post(verifyJWT, upload.any(), updateProject);
-router.route("/uploadInternship").post(verifyJWT, uploadInternship);
-router.route("/updateInternship").post(verifyJWT, updateInternship);
+
+router
+  .route("/uploadInternship")
+  .post(verifyJWT, upload.single("offerLetter"), uploadInternship);
+
+router
+  .route("/updateInternship")
+  .post(verifyJWT, upload.single("offerLetter"), updateInternship);
 
 router
   .route("/uploadExtraCurricular")
@@ -69,7 +83,7 @@ router
   .post(verifyJWT, upload.single("certificate"), updateExtraCurricular);
 
 router.route("/getUserDetails").get(verifyJWT, getUserDetails);
-router.route("/getMSTMarks").get(verifyJWT, getMSTMarks);
+router.route("/getMarks").get(verifyJWT, getMarks);
 router.route("/refreshAcessToken").post(refreshAccessToken);
 router.route("/getAcademicInfo").get(verifyJWT, getAcademicInfo);
 router.route("/getInternship").get(verifyJWT, getInternship);
@@ -77,5 +91,12 @@ router.route("/getExtraCurricular").get(verifyJWT, getExtraCurricular);
 router.route("/getProject").get(verifyJWT, getProject);
 router.route("/deleteProject").delete(verifyJWT, deleteProject);
 router.route("/deleteExtraCurricular").delete(verifyJWT, deleteExtraCurricular);
+router
+  .route("/uploadPlacementDetail")
+  .post(verifyJWT, upload.single("offerLetter"), uploadPlacementDetail);
+
+router.route("/deleteInternship").delete(verifyJWT, deleteInternship);
+router.route("/deletePlacement").delete(verifyJWT, deletePlacementDetail);
+router.route("/getPlacement").get(verifyJWT, getPlacementDetail);
 
 export default router;

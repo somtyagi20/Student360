@@ -20,6 +20,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import DownloadIcon from "@mui/icons-material/Download";
 import AddIcon from "@mui/icons-material/Add";
+import { useRef } from "react";
 
 // function createData(EnrollmentNo, StudentName, Class) {
 //   return { EnrollmentNo, StudentName, Class };
@@ -42,9 +43,37 @@ export default function StudentTable({ Class }) {
   const [searchTerm, setSearchTerm] = useState("");
   const [view, setView] = useState(false);
   const [studentID, setStudentID] = useState("");
-
+  const fileInputRef = useRef(null);
+  const [file, setFile] = useState(null);
   const handleDownload = (event) => {
     // Handle download functionality
+  };
+
+  const handleFileChange = (event) => {
+    setFile(event.target.files[0]);
+  };
+
+  const handleUpload = (event) => {
+    // Handle upload functionality
+    fileInputRef.current.click();
+
+    const formData = new FormData();
+    formData.append("excel_file", fileInputRef.current.files[0]);
+
+    try {
+      axios
+        .post("http://localhost:3000/api/v1/faculty/uploadMSTMarks", formData, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then((response) => {
+          console.log(response.data.message);
+        });
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const handleAddmarks = (event) => {
@@ -177,7 +206,9 @@ export default function StudentTable({ Class }) {
               border: 0,
               marginLeft: 2,
             }}
-            onClick={handleAddmarks}
+            onClick={() => {
+              handleUpload();
+            }}
             startIcon={<AddIcon />}
           >
             Add marks
@@ -191,6 +222,13 @@ export default function StudentTable({ Class }) {
           >
             Send Update Notification
           </Button>
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            accept=".xlsx"
+            onChange={handleFileChange}
+          />
         </Box>
       </Box>
 

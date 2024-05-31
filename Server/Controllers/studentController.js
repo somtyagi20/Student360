@@ -9,7 +9,8 @@ import { Sgpa } from "../Models/SgpaSchema.js";
 import { Internship } from "../Models/InternshipSchema.js";
 import { Project } from "../Models/ProjectSchema.js";
 import { ExtraCurricular } from "../Models/ExtraCurricularSchema.js";
-import { MST } from "../Models/MST.js";
+import { Placement } from "../Models/Placement.js";
+import { Marks } from "../Models/Marks.js";
 import { UploadOnCloudinary } from "../Utils/cloudinary.js";
 import { generateAccessAndRefreshToken } from "../Utils/generateAccessToken.js";
 import JWT from "jsonwebtoken";
@@ -212,7 +213,20 @@ const updatePersonalDetails = asyncHandler(async (req, res) => {
     permanent_address,
     career_goals,
     skills,
+    github,
+    linkedin,
   } = req.body;
+
+  const fileUrl = req.file?.path;
+  if (!fileUrl) {
+    throw new ApiError(401, "Passport size photo is required");
+  }
+
+  const response = await UploadOnCloudinary(fileUrl);
+  if (!response) {
+    throw new ApiError(500, "picture upload failed");
+  }
+
   const user = await Student.findByIdAndUpdate(
     req.user._id,
     {
@@ -226,6 +240,9 @@ const updatePersonalDetails = asyncHandler(async (req, res) => {
       permanent_address,
       career_goals,
       skills,
+      github,
+      linkedin,
+      pass_photo: response.url,
     },
     { new: true }
   ).select("-password -refreshToken");
@@ -333,6 +350,16 @@ const updateGraduationDetails = asyncHandler(async (req, res) => {
 
   const { current_year, cgpa, current_semester, sgpa } = req.body;
 
+  const fileUrl = req.file?.path;
+  if (!fileUrl) {
+    throw new ApiError(401, "Marksheet is required");
+  }
+
+  const response = await UploadOnCloudinary(fileUrl);
+  if (!response) {
+    throw new ApiError(500, "Marksheet upload failed");
+  }
+
   // Find SGPA details for the user
   const sgpaDB = await Sgpa.find({ student: req.user._id });
   let createdSgpa;
@@ -346,6 +373,7 @@ const updateGraduationDetails = asyncHandler(async (req, res) => {
       current_semester,
       sgpa,
       student: req.user._id,
+      marksheet: response.url,
     });
   } else if (
     sgpaDB.some((sgpa) => sgpa.current_semester === current_semester)
@@ -359,6 +387,7 @@ const updateGraduationDetails = asyncHandler(async (req, res) => {
       {
         current_semester,
         sgpa,
+        marksheet: response.url,
       },
       { new: true }
     );
@@ -398,7 +427,7 @@ const updateGraduationDetails = asyncHandler(async (req, res) => {
       new ApiResponse(
         200,
         updatedDetails,
-        "Graduation details updated successfully"
+        "Graduation details updated/uploaded successfully"
       )
     );
 });
@@ -483,6 +512,17 @@ const updateProject = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, project, "Project updated successfully"));
 });
 
+const deleteProject = asyncHandler(async (req, res) => {
+  const projectId = req.query.id;
+  if (!projectId) throw new ApiError(400, "Project Id is required");
+
+  const project = await Project.findByIdAndDelete(projectId);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Project deleted successfully"));
+});
+
 const uploadInternship = asyncHandler(async (req, res) => {
   //get user id from req.user
   //get internship details from frontend
@@ -490,11 +530,22 @@ const uploadInternship = asyncHandler(async (req, res) => {
   //send response
   const { organisation, Start_date, End_date, description } = req.body;
 
+  const fileUrl = req.file?.path;
+  if (!fileUrl) {
+    throw new ApiError(401, "Offer Letter is required");
+  }
+
+  const response = await UploadOnCloudinary(fileUrl);
+  if (!response) {
+    throw new ApiError(500, "Offer Letter upload failed");
+  }
+
   const internship = await Internship.create({
     organisation,
     Start_date,
     End_date,
     description,
+    offerLetter: response.url,
     student: req.user._id,
   });
 
@@ -511,6 +562,16 @@ const updateInternship = asyncHandler(async (req, res) => {
   const { organisation, Start_date, End_date, description } = req.body;
   const internshipId = req.query.id;
 
+  const fileUrl = req.file?.path;
+  if (!fileUrl) {
+    throw new ApiError(401, "Offer Letter is required");
+  }
+
+  const response = await UploadOnCloudinary(fileUrl);
+  if (!response) {
+    throw new ApiError(500, "Offer Letter upload failed");
+  }
+
   const internship = await Internship.findByIdAndUpdate(
     internshipId,
     {
@@ -518,6 +579,7 @@ const updateInternship = asyncHandler(async (req, res) => {
       Start_date,
       End_date,
       description,
+      offerLetter: response.url,
     },
     { new: true }
   );
@@ -527,8 +589,23 @@ const updateInternship = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, internship, "Internship updated successfully"));
 });
 
+const deleteInternship = asyncHandler(async (req, res) => {
+  const internshipId = req.query.id;
+
+  const internship = await Internship.findById(internshipId);
+  if (!internship) {
+    throw new ApiError(404, "Internship not found");
+  }
+
+  await Internship.findByIdAndDelete(internshipId);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Internship deleted successfully"));
+});
+
 const uploadExtraCurricular = asyncHandler(async (req, res) => {
-  const { title, issue_date } = req.body;
+  const { title, issue_date, category } = req.body;
 
   const certificateUrl = req.file?.path;
   if (!certificateUrl) {
@@ -542,6 +619,7 @@ const uploadExtraCurricular = asyncHandler(async (req, res) => {
     certificate: response.url,
     issue_date,
     student: req.user._id,
+    category,
   });
 
   return res
@@ -556,7 +634,7 @@ const uploadExtraCurricular = asyncHandler(async (req, res) => {
 });
 
 const updateExtraCurricular = asyncHandler(async (req, res) => {
-  const { title, issue_date } = req.body;
+  const { title, issue_date, category } = req.body;
   const activityId = req.query.id;
 
   const certificateUrl = req.file?.path;
@@ -572,6 +650,7 @@ const updateExtraCurricular = asyncHandler(async (req, res) => {
       title,
       certificate: response.url,
       issue_date,
+      category,
     },
     { new: true }
   );
@@ -587,6 +666,23 @@ const updateExtraCurricular = asyncHandler(async (req, res) => {
     );
 });
 
+const deleteExtraCurricular = asyncHandler(async (req, res) => {
+  const activityId = req.query.id;
+  if (!activityId) throw new ApiError(400, "Activity Id is required");
+
+  const activity = await ExtraCurricular.findByIdAndDelete(activityId);
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        null,
+        "Extra curricular activity deleted successfully"
+      )
+    );
+});
+
 const getUserDetails = asyncHandler(async (req, res) => {
   const user = await Student.findById(req.user._id).select(
     "-password -refreshToken"
@@ -595,10 +691,13 @@ const getUserDetails = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, user, "User details"));
 });
 
-const getMSTMarks = asyncHandler(async (req, res) => {
-  const mstMarks = await MST.find({ student: req.user._id });
+const getMarks = asyncHandler(async (req, res) => {
+  const { category } = req.body;
+  const marks = await Marks.find({ student: req.user._id, category: category });
 
-  return res.status(200).json(new ApiResponse(200, mstMarks, "User details"));
+  return res
+    .status(200)
+    .json(new ApiResponse(200, marks, "Marks fetched Successfully"));
 });
 
 const refreshAccessToken = asyncHandler(async (req, res) => {
@@ -679,7 +778,11 @@ const getInternship = asyncHandler(async (req, res) => {
 });
 
 const getExtraCurricular = asyncHandler(async (req, res) => {
-  const extraCurricular = await ExtraCurricular.find({ student: req.user._id });
+  const { category } = req.body;
+  const extraCurricular = await ExtraCurricular.find({
+    student: req.user._id,
+    category: category,
+  });
   if (!extraCurricular) {
     throw new ApiError(400, "Extra curricular details not found");
   }
@@ -698,32 +801,60 @@ const getProject = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(200, project, "Project details"));
 });
 
-const deleteProject = asyncHandler(async (req, res) => {
-  const projectId = req.query.id;
-  if (!projectId) throw new ApiError(400, "Project Id is required");
+const uploadPlacementDetail = asyncHandler(async (req, res) => {
+  const { company } = req.body;
 
-  const project = await Project.findByIdAndDelete(projectId);
+  const fileUrl = req.file?.path;
+  if (!fileUrl) {
+    throw new ApiError(401, "Offer Letter is required");
+  }
 
-  return res
-    .status(200)
-    .json(new ApiResponse(200, null, "Project deleted successfully"));
-});
+  const response = await UploadOnCloudinary(fileUrl);
+  if (!response) {
+    throw new ApiError(500, "Offer Letter upload failed");
+  }
 
-const deleteExtraCurricular = asyncHandler(async (req, res) => {
-  const activityId = req.query.id;
-  if (!activityId) throw new ApiError(400, "Activity Id is required");
-
-  const activity = await ExtraCurricular.findByIdAndDelete(activityId);
+  const placementDetail = await Placement.create({
+    student: req.user._id,
+    company: company,
+    offerLetter: response.url,
+  });
 
   return res
     .status(200)
     .json(
       new ApiResponse(
         200,
-        null,
-        "Extra curricular activity deleted successfully"
+        placementDetail,
+        "Placement detail uploaded successfully"
       )
     );
+});
+
+const deletePlacementDetail = asyncHandler(async (req, res) => {
+  const placementId = req.query.id;
+
+  const placement = await Placement.findById(placementId);
+  if (!placement) {
+    throw new ApiError(404, "Placement detail not found");
+  }
+
+  await Placement.findByIdAndDelete(placementId);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, null, "Placement detail deleted successfully"));
+});
+
+const getPlacementDetail = asyncHandler(async (req, res) => {
+  const placement = await Placement.find({ student: req.user._id });
+  if (!placement) {
+    throw new ApiError(400, "Placement details not found");
+  }
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, placement, "Placement details"));
 });
 
 export {
@@ -743,7 +874,7 @@ export {
   uploadExtraCurricular,
   updateExtraCurricular,
   getUserDetails,
-  getMSTMarks,
+  getMarks,
   refreshAccessToken,
   getAcademicInfo,
   getInternship,
@@ -751,4 +882,8 @@ export {
   getProject,
   deleteProject,
   deleteExtraCurricular,
+  uploadPlacementDetail,
+  deleteInternship,
+  deletePlacementDetail,
+  getPlacementDetail,
 };

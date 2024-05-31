@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const internshipSchema = new mongoose.Schema({
   organisation: {
@@ -14,6 +14,10 @@ const internshipSchema = new mongoose.Schema({
     required: true,
   },
   description: {
+    type: String,
+    required: true,
+  },
+  offerLetter: {
     type: String,
     required: true,
   },

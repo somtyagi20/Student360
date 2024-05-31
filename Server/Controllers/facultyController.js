@@ -11,10 +11,13 @@ import { Intermediate } from "../Models/IntermediateSchema.js";
 import { Project } from "../Models/ProjectSchema.js";
 import { ExtraCurricular } from "../Models/ExtraCurricularSchema.js";
 import { UploadOnCloudinary } from "../Utils/cloudinary.js";
-import { MST } from "../Models/MST.js";
+import { Marks } from "../Models/Marks.js";
 import ExcelJS from "exceljs";
-import XLSX from "xlsx";
 import fs from "fs";
+import { fileURLToPath } from "url";
+import path, { dirname } from "path";
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const generateAccessAndRefreshToken = async (_id) => {
   try {
@@ -320,142 +323,207 @@ const updateProfilePicture = asyncHandler(async (req, res) => {
 });
 
 const downloadStudentData = asyncHandler(async (req, res) => {
-  const students = await Student.find({ class: req.query.class });
-  if (students.length === 0) {
-    throw new ApiError(400, "No students found");
-  }
-  const highSchools = await HighSchool.find({
-    student: { $in: students.map((s) => s._id) },
-  });
-  const intermediates = await Intermediate.find({
-    student: { $in: students.map((s) => s._id) },
-  });
-  const projects = await Project.find({
-    student: { $in: students.map((s) => s._id) },
-  });
-  const extracurricularActivities = await ExtraCurricular.find({
-    student: { $in: students.map((s) => s._id) },
-  });
+  const students = await Student.find({});
+  const graduations = await Graduation.find({});
+  const highSchools = await HighSchool.find({});
+  const intermediates = await Intermediate.find({});
+  const projects = await Project.find({});
+  const extraCurriculars = await ExtraCurricular.find({});
+  const marks = await Marks.find({});
 
-  const mergedData = students.map((student) => {
-    const highSchool = highSchools.find((h) => h.student.equals(student._id));
-    const intermediate = intermediates.find((i) =>
-      i.student.equals(student._id)
-    );
-    const project = projects.find((p) => p.student.equals(student._id));
-    const extracurricularActivity = extracurricularActivities.find((e) =>
-      e.student.equals(student._id)
-    );
-
+  // Compile the data
+  const studentsData = students.map((student) => {
+    const studentId = student._id;
     return {
-      ...student.toObject(),
-      ...(highSchool ? highSchool.toObject() : {}),
-      ...(intermediate ? intermediate.toObject() : {}),
-      ...(project ? project.toObject() : {}),
-      ...(extracurricularActivity ? extracurricularActivity.toObject() : {}),
+      student,
+      highSchoolInfo: highSchools.find((info) =>
+        info.student.equals(studentId)
+      ),
+      intermediateInfo: intermediates.find((info) =>
+        info.student.equals(studentId)
+      ),
+      graduationInfo: graduations.find((info) =>
+        info.student.equals(studentId)
+      ),
+      projectsInfo: projects.filter((info) => info.student.equals(studentId)),
+      extraCurricularsInfo: extraCurriculars.filter((info) =>
+        info.student.equals(studentId)
+      ),
+      marksInfo: marks.filter((info) => info.student.equals(studentId)),
     };
   });
 
-  console.log(mergedData);
+  // Create an Excel file
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet("Students Data");
 
-  const fields = [
-    "name",
-    "enrollment_no",
-    "email",
-    "contact_no",
-    "class",
-    "current_address",
-    "permanent_address",
-    "career_goals",
-    "skills",
-    "dob",
-    "highSchool.name",
-    "highSchool.address",
-    "highSchool.board_of_education",
-    "highSchool.passing_year",
-    "highSchool.percentage",
-    "intermediate.name",
-    "intermediate.address",
-    "intermediate.board_of_education",
-    "intermediate.passing_year",
-    "intermediate.percentage",
-    "project.title",
-    "project.description",
-    "project.technologies",
-    "extracurricularActivity.title",
-    "extracurricularActivity.issue_date",
-    "extracurricularActivity.certificate",
+  // Add headers
+  worksheet.columns = [
+    { header: "Name", key: "name" },
+    { header: "Enrollment No", key: "enrollment_no" },
+    { header: "Email", key: "email" },
+    { header: "High School", key: "highSchool" },
+    { header: "High School Percentage", key: "highSchoolPercentage" },
+    { header: "Intermediate School", key: "intermediateSchool" },
+    { header: "Intermediate Percentage", key: "intermediatePercentage" },
+    { header: "Graduation CGPA", key: "cgpa" },
+    { header: "Projects", key: "projects" },
+    { header: "Extra Curriculars", key: "extraCurriculars" },
   ];
 
-  const workbook = new ExcelJS.Workbook();
-  const worksheet = workbook.addWorksheet("Students");
-
-  // Define columns
-  const columns = fields.map((field) => {
-    return { header: field, key: field };
+  // Add rows for each student
+  studentsData.forEach((studentData) => {
+    worksheet.addRow({
+      name: studentData.student.name,
+      enrollment_no: studentData.student.enrollment_no,
+      email: studentData.student.email,
+      highSchool: studentData.highSchoolInfo?.name || "",
+      highSchoolPercentage: studentData.highSchoolInfo?.percentage || "",
+      intermediateSchool: studentData.intermediateInfo?.name || "",
+      intermediatePercentage: studentData.intermediateInfo?.percentage || "",
+      cgpa: studentData.graduationInfo?.cgpa || "",
+      projects: studentData.projectsInfo
+        .map((project) => project.title)
+        .join(", "),
+      extraCurriculars: studentData.extraCurricularsInfo
+        .map((activity) => activity.title)
+        .join(", "),
+    });
   });
 
-  worksheet.columns = columns;
+  // const filePath = path.resolve(__dirname, "students_data.xlsx");
+  // await workbook.xlsx.writeFile(filePath);
 
-  // Add rows
-  mergedData.forEach((data) => {
-    worksheet.addRow(data);
-  });
+  // Generate the buffer
+  const excelBuffer = await workbook.xlsx.writeBuffer();
 
+  // Send the buffer as a downloadable file
+  res.setHeader(
+    "Content-Disposition",
+    "attachment; filename=students_data.xlsx"
+  );
   res.setHeader(
     "Content-Type",
     "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
   );
-  res.setHeader("Content-Disposition", "attachment; filename=students.xlsx");
-
-  await workbook.xlsx.writeFile("students.xlsx");
-  return res.status(200).end();
+  res.send(excelBuffer);
 });
 
-const uploadMSTMarks = asyncHandler(async (req, res) => {
+const filteredStudentData = asyncHandler(async (req, res) => {
+  const { students } = req.body;
+
+  // Compile the data
+  const studentsDataPromises = students.map(async (studentId) => {
+    const student = await Student.findById(studentId);
+    const graduations = await Graduation.find({ student: studentId });
+    const highSchools = await HighSchool.find({ student: studentId });
+    const intermediates = await Intermediate.find({ student: studentId });
+    const projects = await Project.find({ student: studentId });
+    const extraCurriculars = await ExtraCurricular.find({ student: studentId });
+
+    return {
+      student,
+      highSchools,
+      intermediates,
+      graduations,
+      projects,
+      extraCurriculars,
+    };
+  });
+  const studentsData = await Promise.all(studentsDataPromises);
+  console.log(JSON.stringify(studentsData, null, 2));
+  // Create an Excel file
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet("Students Data");
+
+  // Add headers
+  worksheet.columns = [
+    { header: "Name", key: "name" },
+    { header: "Enrollment No", key: "enrollment_no" },
+    { header: "Email", key: "email" },
+    { header: "High School", key: "highSchool" },
+    { header: "High School Percentage", key: "highSchoolPercentage" },
+    { header: "Intermediate School", key: "intermediateSchool" },
+    { header: "Intermediate Percentage", key: "intermediatePercentage" },
+    { header: "Graduation CGPA", key: "cgpa" },
+    { header: "Projects", key: "projects" },
+    { header: "Extra Curriculars", key: "extraCurriculars" },
+  ];
+
+  // Add rows for each student
+  studentsData.forEach((studentData) => {
+    worksheet.addRow({
+      name: studentData.student.name,
+      enrollment_no: studentData.student.enrollment_no,
+      email: studentData.student.email,
+      highSchool: studentData.highSchools[0]?.name || "",
+      highSchoolPercentage: studentData.highSchools[0]?.percentage || "",
+      intermediateSchool: studentData.intermediates[0]?.name || "",
+      intermediatePercentage: studentData.intermediates[0]?.percentage || "",
+      cgpa: studentData.graduations[0]?.cgpa || "",
+      projects: studentData.projects.map((project) => project.title).join(", "),
+      extraCurriculars: studentData.extraCurriculars
+        .map((activity) => activity.title)
+        .join(", "),
+    });
+  });
+
+  const filePath = path.resolve(__dirname, "students_data.xlsx");
+  await workbook.xlsx.writeFile(filePath);
+
+  // Generate the buffer
+  const excelBuffer = await workbook.xlsx.writeBuffer();
+
+  // Send the buffer as a downloadable file
+  res.setHeader(
+    "Content-Disposition",
+    "attachment; filename=students_data.xlsx"
+  );
+  res.setHeader(
+    "Content-Type",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+  );
+  res.send(excelBuffer);
+});
+
+const uploadMarks = asyncHandler(async (req, res) => {
   const fileUrl = req.file?.path;
   if (!fileUrl) {
     throw new ApiError(401, "File is required");
   }
   console.log(fileUrl);
-  // Read the Excel file
+
+  const { year, semester, title } = req.body;
+
   const workbook = XLSX.readFile(fileUrl);
-
-  // Get the first worksheet (or replace 'Sheet1' with the name of the worksheet you want to convert)
   const worksheet = workbook.Sheets[workbook.SheetNames[0]];
-
-  // Convert the worksheet data to JSON
-  // Assume jsonData is the array of JSON objects
   const jsonData = XLSX.utils.sheet_to_json(worksheet);
+  console.log(jsonData);
 
-  // Iterate over jsonData
   for (let data of jsonData) {
-    // Create a new MST object
-    const mst = new MST({
-      year: data.year.toString(),
-      semester: data.semester.toString(),
-      mst_no: data.mst_no.toString(),
-      // You need to set the student field to the ObjectId of the corresponding Student document
-      // You can find the Student document by the enrollment_no field
-      student: await Student.findOne({ enrollment_no: data.enrollment_no })._id,
+    const student = await Student.findOne({
+      enrollment_no: data.Enrollment_no,
+    });
+    const marks = new Marks({
+      year,
+      semester,
+      title,
+      student: student._id,
     });
 
-    // Create the subject map
-    const subjectMap = new Map();
+    const subjectMap = {};
     for (let key in data) {
       if (
-        key !== "year" &&
-        key !== "semester" &&
-        key !== "mst_no" &&
-        key !== "enrollment_no"
+        key !== "Year" &&
+        key !== "Semester" &&
+        key !== "Enrollment_no" &&
+        key !== "Name"
       ) {
-        subjectMap.set(key, data[key].toString());
+        subjectMap[key] = data[key].toString();
       }
     }
-    mst.subject = subjectMap;
-
-    // Save the MST object
-    await mst.save();
+    marks.subject = subjectMap;
+    await marks.save();
   }
 
   fs.unlinkSync(fileUrl);
@@ -463,23 +531,10 @@ const uploadMSTMarks = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(new ApiResponse(200, null, "Marks uploaded successfully"));
-
-  // const { student_id, marks } = req.body;
-  // if (!student_id || !marks) {
-  //   throw new ApiError(400, "Student ID and marks are required");
-  // }
-
-  // const student = await Student.findById(student_id);
-  // if (!student) {
-  //   throw new ApiError(400, "Student does not exist");
-  // }
-
-  // student.ms_marks = marks;
-  // await student.save({ validateBeforeSave: false });
 });
 
 const mailStudentsOfClass = asyncHandler(async (req, res) => {
-  const { class: className } = req.body;
+  const { class: className, msg } = req.body;
   if (!className) {
     throw new ApiError(400, "Class is required");
   }
@@ -506,7 +561,7 @@ const mailStudentsOfClass = asyncHandler(async (req, res) => {
       from: process.env.EMAIL_USER,
       to: student.email,
       subject: "Reminder: Please Update Your Details",
-      text: `Dear ${student.name},\n\nWe noticed that some of your details might be outdated. We kindly request you to update them at your earliest convenience.\n\nBest Regards,\nYour Faculty`,
+      text: msg,
     };
 
     return transporter.sendMail(mailOptions);
@@ -519,6 +574,19 @@ const mailStudentsOfClass = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, null, "Emails sent to students successfully"));
 });
 
+// const filterStudents = asyncHandler(async (req, res) => {
+//   const { internship, achievement, placement } = req.body;
+//   if (!internship || !achievement || !placement) {
+//     throw new ApiError(400, "All fields are required");
+//   }
+
+//   const students = await Student.find({ internship, achievement, placement});
+
+//   return res
+//     .status(200)
+//     .json(new ApiResponse(200, students, "Students fetched successfully"));
+// });
+
 export {
   loginFaculty,
   forgotPassword,
@@ -530,9 +598,7 @@ export {
   updatePersonalDetails,
   updateProfilePicture,
   downloadStudentData,
-
   mailStudentsOfClass,
-
-  uploadMSTMarks,
-
+  uploadMarks,
+  filteredStudentData,
 };

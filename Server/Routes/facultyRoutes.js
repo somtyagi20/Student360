@@ -9,15 +9,10 @@ import {
   getStudent,
   updatePersonalDetails,
   updateProfilePicture,
-
   downloadStudentData,
-
-
   mailStudentsOfClass,
-
-
-  uploadMSTMarks,
-
+  uploadMarks,
+  filteredStudentData,
 } from "../Controllers/facultyController.js";
 import { verifyJWT } from "../Middlewares/authFaculty.js";
 import { upload } from "../Middlewares/multer.js";
@@ -39,6 +34,7 @@ router
 router.route("/downloadStudentData").get(verifyJWT, downloadStudentData);
 router
   .route("/uploadMSTMarks")
-  .post(verifyJWT, upload.single("excel_file"), uploadMSTMarks);
+  .post(verifyJWT, upload.single("excel_file"), uploadMarks);
+router.route("/filteredStudentData").get(verifyJWT, filteredStudentData);
 
 export default router;
