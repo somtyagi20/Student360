@@ -1,9 +1,8 @@
 # Student 360 - Student Record Administration Solution
 
 <div align="center">
-  <img src="images/logo.png" alt="Student360 Logo" width="200" style="margin-bottom: 20px;"/>
-  <h2>Empowering Educational Institutions</h2>
-  <p>with Seamless Student Data Management</p>
+  <img src="images/logo.png" alt="Student360 Logo" width="200" style="margin-bottom: 20px; border-radius: 10px"/>
+  <p>Empowering Educational Institutions with Seamless Student Data Management</p>
 </div>
 
 
