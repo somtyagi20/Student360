@@ -1,10 +1,11 @@
 # Student 360 - Student Record Administration Solution
 
-<p align="center">
-  <img src="images/logo.png" alt="Student360 Logo" width="200"/>
-  <br>
-  <i>Empowering Educational Institutions with Seamless Student Data Management</i>
-</p>
+<div align="center">
+  <img src="images/logo.png" alt="Student360 Logo" width="200" style="margin-bottom: 20px;"/>
+  <h2>Empowering Educational Institutions</h2>
+  <p>with Seamless Student Data Management</p>
+</div>
+
 
 In the realm of education, efficient management of student information is crucial for the seamless operation of educational institutions. Student360, a comprehensive Student Record Administration Solution (SRAS), is designed to streamline administrative tasks and enhance data management.
 
