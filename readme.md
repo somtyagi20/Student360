@@ -53,10 +53,11 @@ Student360 is meticulously crafted to meet the diverse needs of educational admi
 ## 📸 Screenshots
 
 <p align="center">
-  <img src="images/Sign in.png" alt="Login Screen" width="30%"/>
-  <img src="images/student dashboard.png" alt="Student Dashboard" width="30%"/>
-  <img src="images/admin dashboard.png" alt="Admin Panel" width="30%"/>
+  <img src="images/Sign in.png" alt="Login Screen" width="100%" style="display:block; margin-bottom: 10px;"/>
+  <img src="images/student dashboard.png" alt="Student Dashboard" width="100%" style="display:block; margin-bottom: 10px;"/>
+  <img src="images/admin dashboard.png" alt="Admin Panel" width="100%" style="display:block; margin-bottom: 10px;"/>
 </p>
+
 
 ## 🛠️ Tech Stack
 
