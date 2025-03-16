@@ -53,9 +53,21 @@ Student360 is meticulously crafted to meet the diverse needs of educational admi
 ## 📸 Screenshots
 
 <p align="center">
+  <figure style="text-align: center; margin-bottom: 20px;">
   <img src="images/Sign in.png" alt="Login Screen" width="100%" style="display:block; margin-bottom: 10px;"/>
+  <figcaption>Login Screen</figcaption>
+</figure>
+
+<figure style="text-align: center; margin-bottom: 20px;">
   <img src="images/student dashboard.png" alt="Student Dashboard" width="100%" style="display:block; margin-bottom: 10px;"/>
+  <figcaption>Student Dashboard</figcaption>
+</figure>
+
+<figure style="text-align: center;">
   <img src="images/admin dashboard.png" alt="Admin Panel" width="100%" style="display:block; margin-bottom: 10px;"/>
+  <figcaption>Admin Panel</figcaption>
+</figure>
+
 </p>
 
 
