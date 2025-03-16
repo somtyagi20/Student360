@@ -52,24 +52,21 @@ Student360 is meticulously crafted to meet the diverse needs of educational admi
 
 ## 📸 Screenshots
 
-<p align="center">
-  <figure style="text-align: center; margin-bottom: 20px;">
-  <img src="images/Sign in.png" alt="Login Screen" width="100%" style="display:block; margin-bottom: 10px;"/>
-  <figcaption style="font-size: 1.2em; color: #555; font-weight: bold; margin-top: 8px;">Login Screen</figcaption>
-</figure>
+<div align="center">
+  <img src="images/Sign in.png" alt="Login Screen" width="100%" />
+  <p style="font-size: 1.2em; font-weight: bold; color: #555;">Login Screen</p>
+</div>
 
-<figure style="text-align: center; margin-bottom: 20px;">
-  <img src="images/student dashboard.png" alt="Student Dashboard" width="100%" style="display:block; margin-bottom: 10px;"/>
-  <figcaption style="font-size: 1.2em; color: #555; font-weight: bold; margin-top: 8px;">Student Dashboard</figcaption>
-</figure>
+<div align="center">
+  <img src="images/student dashboard.png" alt="Student Dashboard" width="100%" />
+  <p style="font-size: 1.2em; font-weight: bold; color: #555;">Student Dashboard</p>
+</div>
 
-<figure style="text-align: center;">
-  <img src="images/admin dashboard.png" alt="Admin Panel" width="100%" style="display:block; margin-bottom: 10px;"/>
-  <figcaption style="font-size: 1.2em; color: #555; font-weight: bold; margin-top: 8px;">Admin Panel</figcaption>
-</figure>
+<div align="center">
+  <img src="images/admin dashboard.png" alt="Admin Panel" width="100%" />
+  <p style="font-size: 1.2em; font-weight: bold; color: #555;">Admin Panel</p>
+</div>
 
-
-</p>
 
 
 ## 🛠️ Tech Stack
